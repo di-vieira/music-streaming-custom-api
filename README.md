@@ -1,1 +1,1 @@
-# custom-spotify-api
+# music-streaming-custom-api
