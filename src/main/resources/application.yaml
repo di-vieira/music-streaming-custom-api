@@ -1,0 +1,29 @@
+spotify:
+  api:
+    url: https://api.spotify.com/v1
+    top:
+      tracks: /me/top/tracks 
+      
+security:
+  oauth2:
+    client:
+      clientId: 08c5fd71eb9d45fd9cf760e8d0d62040
+      clientSecret: c433c5969ea04545ab19954653f7affd
+      accessTokenUri: https://accounts.spotify.com/api/token
+      userAuthorizationUri: https://accounts.spotify.com/authorize
+      authenticationScheme: query
+      clientAuthenticationScheme: form
+      scope: user-read-private user-read-email user-top-read
+    resource:
+      userInfoUri: https://api.spotify.com/v1/me
+      
+springdoc:
+  swagger-ui:
+    oauth2RedirectUrl: /swagger-ui/oauth2-redirect.html
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:musicstreamingdb
+    driverClassName: org.h2.Driver
+    username: dbuser
+    password: Mu$1c
