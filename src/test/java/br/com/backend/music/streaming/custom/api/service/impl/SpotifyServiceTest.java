@@ -186,7 +186,7 @@ public class SpotifyServiceTest {
 	}
 	
 	/**
-	 * Teste do Fluxo 
+	 * Teste do Fluxo de Exceção de parse do JSON na busca de top-tracks. Utiliza um JSON vazio
 	 */
 	@Test
 	public void findFavoriteTracksJsonProcessingExceptionTest() {
