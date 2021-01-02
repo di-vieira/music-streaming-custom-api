@@ -11,6 +11,13 @@
 	<groupId>br.com.diego</groupId>
 	<artifactId>music-streaming-custom-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	
+	<properties>
+		<java.version>11</java.version>
+		<swagger.version>2.9.2</swagger.version>
+		<mockito.version>1.10.19</mockito.version>
+	</properties>
+	
 
 	<dependencies>
 		<dependency>
@@ -24,12 +31,12 @@
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
-			<version>2.9.2</version>
+			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.9.2</version>
+			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -52,7 +59,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.10.19</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
