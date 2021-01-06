@@ -1,9 +1,14 @@
 package br.com.backend.music.streaming.custom.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -289,6 +294,74 @@ public class SpotifyService implements MusicStreamingService {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * Retorna as ocorrencias de cada gênero, dentro dos artistas e faixas favoritas
+	 * do usuário
+	 * 
+	 * @param artists
+	 * @param tracks
+	 * @return
+	 */
+	public List<Entry<String, Integer>> genresCount(List<Artist> artists, List<Track> tracks) {
+		Map<String, Integer> ocurrenciesByGenre = new TreeMap<String, Integer>();
+
+		List<String> genres = new ArrayList<String>();
+		genres.addAll(getGenresByTopArtists(artists));
+		genres.addAll(getGenresByTopTracks(tracks));
+
+		Set<String> distinctGenres = new HashSet<>(genres);
+		for (String genre : distinctGenres) {
+			ocurrenciesByGenre.put(genre, Collections.frequency(genres, genre));
+		}
+
+		// Ordena lista de gêneros
+		List<Entry<String, Integer>> sortedGenres = new ArrayList<Entry<String, Integer>>(
+				ocurrenciesByGenre.entrySet());
+		Collections.sort(sortedGenres, new Comparator<Entry<String, Integer>>() {
+			@Override
+			public int compare(Entry<String, Integer> genre1, Entry<String, Integer> genre2) {
+				return genre2.getValue().compareTo(genre1.getValue());
+			}
+		});
+		return sortedGenres;
+	}
+
+	/**
+	 * Retorna lista com todos os gêneros contidos dos top artistas do usuário
+	 * 
+	 * @param artists
+	 * @return
+	 */
+	public List<String> getGenresByTopArtists(List<Artist> artists) {
+		List<String> genres = new ArrayList<String>();
+
+		for (Artist artist : artists) {
+			genres.addAll(artist.getGenres());
+		}
+
+		return genres;
+	}
+
+	/**
+	 * Retorna Lista com todos os gêneros contidos nas top tracks do usuário
+	 * 
+	 * @param tracks
+	 * @return
+	 */
+	public List<String> getGenresByTopTracks(List<Track> tracks) {
+		List<String> genres = new ArrayList<String>();
+
+		for (Track track : tracks) {
+			List<Artist> artists = track.getArtists();
+
+			for (Artist artist : artists) {
+				artist = findArtistById(artist.getId());
+				genres.addAll(artist.getGenres());
+			}
+		}
+
+		return genres;
+	}
 
 	/**
 	 * Creates a HTTP Entity to consume Spotify API
