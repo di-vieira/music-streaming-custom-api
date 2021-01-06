@@ -125,7 +125,7 @@ public class SwaggerConfig {
 	 * @return SecurityContext
 	 */
 	private SecurityContext securityContext() {
-        return SecurityContext.builder().securityReferences(defaultAuth()).forPaths(PathSelectors.ant("/streaming/api/v0/**"))
+        return SecurityContext.builder().securityReferences(defaultAuth()).forPaths(PathSelectors.ant("/streaming/api/**"))
                 .build();
     }
 	

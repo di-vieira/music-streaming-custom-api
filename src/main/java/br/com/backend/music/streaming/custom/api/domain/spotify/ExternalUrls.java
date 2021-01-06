@@ -1,5 +1,6 @@
 package br.com.backend.music.streaming.custom.api.domain.spotify;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -8,7 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author diego.vieira
  *
  */
-public class ExternalUrl {
+@JsonInclude(JsonInclude.Include.NON_NULL) 
+public class ExternalUrls {
 	/**
 	 * URL externa à API do Spotify
 	 */

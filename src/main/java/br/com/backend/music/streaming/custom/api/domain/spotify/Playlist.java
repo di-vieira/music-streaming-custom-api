@@ -5,74 +5,128 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
+
 /**
- * Classe para representar um artista
+ * Classe que representa uma playlist
  * 
- * @author diego.vieira
+ * @author diegovieira
  *
  */
-@JsonInclude(JsonInclude.Include.NON_NULL) 
-public class Artist {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Playlist {
 
 	/**
-	 * Lista de URLs do Artista externas à API
+	 * 
+	 */
+	@JsonProperty("collaborative")
+	private Boolean collaborative;
+	
+	/**
+	 * 
+	 */
+	@JsonProperty("description")
+	private String description;
+	
+	/**
+	 * 
 	 */
 	@JsonProperty("external_urls")
 	private ExternalUrls externalUrls;
-
+	
 	/**
-	 * Lista de seguidores do Artista
+	 * 
 	 */
 	@JsonProperty("followers")
 	private Followers followers;
-
+	
 	/**
-	 * Lista de Generos aos quais o artista pertence
-	 */
-	@JsonProperty("genres")
-	private List<String> genres;
-
-	/**
-	 * URL do artista na API
+	 * 
 	 */
 	@JsonProperty("href")
 	private String href;
-
+	
 	/**
-	 * Id do artista
+	 * 
 	 */
 	@JsonProperty("id")
 	private String id;
-
+	
 	/**
-	 * Imagens referentes ao artista
+	 * 
 	 */
 	@JsonProperty("images")
 	private List<Image> images;
-
+	
 	/**
-	 * Nome do artista
+	 * 
 	 */
 	@JsonProperty("name")
 	private String name;
-
+	
 	/**
-	 * Popularidade do artista
+	 * Proprietário da playlist
 	 */
-	@JsonProperty("popularity")
-	private Integer popularity;
-
+	@JsonProperty("owner")
+	private User owner;
+	
 	/**
-	 * Tipo do artista
+	 * Flag que indica se a playlist é publica ou privada
+	 */
+	@JsonProperty("public")
+	private Boolean isPublic;
+	
+	/**
+	 * Identificador da versão da playlist
+	 */
+	@JsonProperty("snapshot_id")
+	private String snapshotId;
+	
+	/**
+	 * Lista de faixas que compoem a playlist
+	 */
+	@JsonProperty("tracks")
+	private StreamingResponse<Track> tracks;
+	
+	/**
+	 * tipo de objeto
 	 */
 	@JsonProperty("type")
 	private String type;
-
+	
 	/**
-	 * URI do artista
+	 * URI do usuário
 	 */
 	@JsonProperty("uri")
 	private String uri;
+
+	/**
+	 * @return the collaborative
+	 */
+	public Boolean getCollaborative() {
+		return collaborative;
+	}
+
+	/**
+	 * @param collaborative the collaborative to set
+	 */
+	public void setCollaborative(Boolean collaborative) {
+		this.collaborative = collaborative;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	/**
 	 * @return the externalUrls
@@ -100,20 +154,6 @@ public class Artist {
 	 */
 	public void setFollowers(Followers followers) {
 		this.followers = followers;
-	}
-
-	/**
-	 * @return the genres
-	 */
-	public List<String> getGenres() {
-		return genres;
-	}
-
-	/**
-	 * @param genres the genres to set
-	 */
-	public void setGenres(List<String> genres) {
-		this.genres = genres;
 	}
 
 	/**
@@ -173,17 +213,59 @@ public class Artist {
 	}
 
 	/**
-	 * @return the popularity
+	 * @return the owner
 	 */
-	public Integer getPopularity() {
-		return popularity;
+	public User getOwner() {
+		return owner;
 	}
 
 	/**
-	 * @param popularity the popularity to set
+	 * @param owner the owner to set
 	 */
-	public void setPopularity(Integer popularity) {
-		this.popularity = popularity;
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+
+	/**
+	 * @return the isPublic
+	 */
+	public Boolean getIsPublic() {
+		return isPublic;
+	}
+
+	/**
+	 * @param isPublic the isPublic to set
+	 */
+	public void setIsPublic(Boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+
+	/**
+	 * @return the snapshotId
+	 */
+	public String getSnapshotId() {
+		return snapshotId;
+	}
+
+	/**
+	 * @param snapshotId the snapshotId to set
+	 */
+	public void setSnapshotId(String snapshotId) {
+		this.snapshotId = snapshotId;
+	}
+
+	/**
+	 * @return the tracks
+	 */
+	public StreamingResponse<Track> getTracks() {
+		return tracks;
+	}
+
+	/**
+	 * @param tracks the tracks to set
+	 */
+	public void setTracks(StreamingResponse<Track> tracks) {
+		this.tracks = tracks;
 	}
 
 	/**

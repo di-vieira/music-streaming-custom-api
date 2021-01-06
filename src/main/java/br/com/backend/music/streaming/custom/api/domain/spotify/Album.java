@@ -2,6 +2,7 @@ package br.com.backend.music.streaming.custom.api.domain.spotify;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author diego.vieira
  *
  */
+@JsonInclude(JsonInclude.Include.NON_NULL) 
 public class Album {
 
 	/**
@@ -34,7 +36,7 @@ public class Album {
 	 * Lista de URLs do album externas à API
 	 */
 	@JsonProperty("external_urls")
-	private List<ExternalUrl> externalUrls;
+	private ExternalUrls externalUrls;
 
 	/**
 	 * Link do album
@@ -135,14 +137,14 @@ public class Album {
 	/**
 	 * @return the externalUrls
 	 */
-	public List<ExternalUrl> getExternalUrls() {
+	public ExternalUrls getExternalUrls() {
 		return externalUrls;
 	}
 
 	/**
 	 * @param externalUrls the externalUrls to set
 	 */
-	public void setExternalUrls(List<ExternalUrl> externalUrls) {
+	public void setExternalUrls(ExternalUrls externalUrls) {
 		this.externalUrls = externalUrls;
 	}
 
