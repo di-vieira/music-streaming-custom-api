@@ -6,73 +6,92 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar um artista
+ * Classe para representar o usuário autorizado a consumir a API
  * 
- * @author diego.vieira
+ * @author diegovieira
  *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL) 
-public class Artist {
+public class User {
 
 	/**
-	 * Lista de URLs do Artista externas à API
+	 * País do usuário
+	 */
+	@JsonProperty("country")
+	private String country;
+	/**
+	 * Nome do usuário exibido pelo serviço de streaming
+	 */
+	@JsonProperty("display_name")
+	private String displayName;
+	/**
+	 * URLs externas do usuário
 	 */
 	@JsonProperty("external_urls")
 	private ExternalUrls externalUrls;
-
 	/**
-	 * Lista de seguidores do Artista
+	 * Dados dos seguidores do usuário
 	 */
 	@JsonProperty("followers")
 	private Followers followers;
-
 	/**
-	 * Lista de Generos aos quais o artista pertence
-	 */
-	@JsonProperty("genres")
-	private List<String> genres;
-
-	/**
-	 * URL do artista na API
+	 * Url do usuário
 	 */
 	@JsonProperty("href")
 	private String href;
-
 	/**
-	 * Id do artista
+	 * id do usuário
 	 */
 	@JsonProperty("id")
 	private String id;
-
 	/**
-	 * Imagens referentes ao artista
+	 * Lista de imagens do usuário
 	 */
 	@JsonProperty("images")
 	private List<Image> images;
-
 	/**
-	 * Nome do artista
+	 * Tipo de assinatura do usuário
 	 */
-	@JsonProperty("name")
-	private String name;
-
+	@JsonProperty("product")
+	private String product;
 	/**
-	 * Popularidade do artista
-	 */
-	@JsonProperty("popularity")
-	private Integer popularity;
-
-	/**
-	 * Tipo do artista
+	 * tipo de objeto
 	 */
 	@JsonProperty("type")
 	private String type;
-
 	/**
-	 * URI do artista
+	 * URI do usuário
 	 */
 	@JsonProperty("uri")
 	private String uri;
+
+	/**
+	 * @return the country
+	 */
+	public String getCountry() {
+		return country;
+	}
+
+	/**
+	 * @param country the country to set
+	 */
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	/**
+	 * @return the displayName
+	 */
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	/**
+	 * @param displayName the displayName to set
+	 */
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
 	/**
 	 * @return the externalUrls
@@ -100,20 +119,6 @@ public class Artist {
 	 */
 	public void setFollowers(Followers followers) {
 		this.followers = followers;
-	}
-
-	/**
-	 * @return the genres
-	 */
-	public List<String> getGenres() {
-		return genres;
-	}
-
-	/**
-	 * @param genres the genres to set
-	 */
-	public void setGenres(List<String> genres) {
-		this.genres = genres;
 	}
 
 	/**
@@ -159,31 +164,17 @@ public class Artist {
 	}
 
 	/**
-	 * @return the name
+	 * @return the product
 	 */
-	public String getName() {
-		return name;
+	public String getProduct() {
+		return product;
 	}
 
 	/**
-	 * @param name the name to set
+	 * @param product the product to set
 	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * @return the popularity
-	 */
-	public Integer getPopularity() {
-		return popularity;
-	}
-
-	/**
-	 * @param popularity the popularity to set
-	 */
-	public void setPopularity(Integer popularity) {
-		this.popularity = popularity;
+	public void setProduct(String product) {
+		this.product = product;
 	}
 
 	/**

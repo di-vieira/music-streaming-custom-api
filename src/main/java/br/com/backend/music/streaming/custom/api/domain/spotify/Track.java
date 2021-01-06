@@ -2,6 +2,7 @@ package br.com.backend.music.streaming.custom.api.domain.spotify;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author diego.vieira
  *
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Track {
 
 	/**
@@ -49,14 +51,17 @@ public class Track {
 	@JsonProperty("explicit")
 	private Boolean explicit;
 
+	/**
+	 * External Ids from track
+	 */
 	@JsonProperty("external_ids")
-	private List<ExternalId> externalIds;
+	private ExternalIds externalIds;
 
 	/**
 	 * Lista de urls da faixa
 	 */
 	@JsonProperty("external_urls")
-	private List<ExternalUrl> externalUrls;
+	private ExternalUrls externalUrls;
 
 	/**
 	 * Link da faixa na API Spotify
@@ -75,6 +80,12 @@ public class Track {
 	 */
 	@JsonProperty("is_local")
 	private Boolean isLocal;
+
+	/**
+	 * Flag to indicate if the track is playable
+	 */
+	@JsonProperty("is_playable")
+	private Boolean isPlayable;
 
 	/**
 	 * Nome da Faixa
@@ -200,28 +211,28 @@ public class Track {
 	/**
 	 * @return the externalIds
 	 */
-	public List<ExternalId> getExternalIds() {
+	public ExternalIds getExternalIds() {
 		return externalIds;
 	}
 
 	/**
 	 * @param externalIds the externalIds to set
 	 */
-	public void setExternalIds(List<ExternalId> externalIds) {
+	public void setExternalIds(ExternalIds externalIds) {
 		this.externalIds = externalIds;
 	}
 
 	/**
 	 * @return the externalUrls
 	 */
-	public List<ExternalUrl> getExternalUrls() {
+	public ExternalUrls getExternalUrls() {
 		return externalUrls;
 	}
 
 	/**
 	 * @param externalUrls the externalUrls to set
 	 */
-	public void setExternalUrls(List<ExternalUrl> externalUrls) {
+	public void setExternalUrls(ExternalUrls externalUrls) {
 		this.externalUrls = externalUrls;
 	}
 
@@ -265,6 +276,20 @@ public class Track {
 	 */
 	public void setIsLocal(Boolean isLocal) {
 		this.isLocal = isLocal;
+	}
+
+	/**
+	 * @return the isPlayable
+	 */
+	public Boolean getIsPlayable() {
+		return isPlayable;
+	}
+
+	/**
+	 * @param isPlayable the isPlayable to set
+	 */
+	public void setIsPlayable(Boolean isPlayable) {
+		this.isPlayable = isPlayable;
 	}
 
 	/**
@@ -324,7 +349,7 @@ public class Track {
 	}
 
 	/**
-	 * @return the track
+	 * @return the type
 	 */
 	public String getType() {
 		return type;
@@ -333,7 +358,7 @@ public class Track {
 	/**
 	 * @param type the type to set
 	 */
-	public void setTrack(String type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
@@ -350,4 +375,5 @@ public class Track {
 	public void setURI(String uRI) {
 		URI = uRI;
 	}
+
 }

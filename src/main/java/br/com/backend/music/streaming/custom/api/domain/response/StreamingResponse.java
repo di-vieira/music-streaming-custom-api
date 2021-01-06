@@ -1,13 +1,11 @@
-package br.com.backend.music.streaming.custom.api.domain.spotify.response;
+package br.com.backend.music.streaming.custom.api.domain.response;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
+public class StreamingResponse<T> {
 
-public class TopTracksResponse {
-
-	List<Track> items = new ArrayList<Track>();
+	List<T> items = new ArrayList<T>();
 	private Integer total;
 	private Integer limit;
 	private Integer offset;
@@ -18,14 +16,14 @@ public class TopTracksResponse {
 	/**
 	 * @return the items
 	 */
-	public List<Track> getItems() {
+	public List<T> getItems() {
 		return items;
 	}
 
 	/**
 	 * @param items the items to set
 	 */
-	public void setItems(List<Track> items) {
+	public void setItems(List<T> items) {
 		this.items = items;
 	}
 

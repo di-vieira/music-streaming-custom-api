@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,7 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import br.com.backend.music.streaming.custom.api.domain.spotify.response.TopTracksResponse;
+import br.com.backend.music.streaming.custom.api.domain.request.CreatePlaylistRequest;
+import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
+import br.com.backend.music.streaming.custom.api.domain.spotify.Artist;
+import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
+import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
 import br.com.backend.music.streaming.custom.api.service.MusicStreamingService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -24,7 +30,7 @@ import io.swagger.annotations.ApiParam;
  *
  */
 
-@RequestMapping("/streaming/api/v0")
+@RequestMapping("/streaming/api")
 @RestController
 public class MusicStreamingCustomController {
 
@@ -32,22 +38,55 @@ public class MusicStreamingCustomController {
 	MusicStreamingService musicStreamingService;
 
 	/**
-	 * 
 	 * @param token
-	 * @return
+	 * @return ResponseEntity<StreamingResponse<Track>> Objeto com a lista de faixas
+	 *         favoritas do usuário
 	 */
 	@GetMapping("/favorite-tracks")
-	@ApiOperation(value = "retorna lista de músicas favoritas")
+	@ApiOperation(value = "retorna objeto com lista de músicas favoritas do usuário")
 	@ResponseBody
-	public ResponseEntity<TopTracksResponse> findFavoriteTracks(
-			@RequestHeader(value = "authorization", required = false)
-			@ApiParam("Parâmetro de Token de autenticação. Não é necessário informar, pois o mesmo é extraído do Header da solicitação") 
-			String token) {
+	public ResponseEntity<StreamingResponse<Track>> findFavoriteTracks(
+			@RequestHeader(value = "authorization", required = false) @ApiParam("Parâmetro de Token de autenticação. Não é necessário informar, pois o mesmo é extraído do Header da solicitação") String token) {
 		try {
-			TopTracksResponse response = musicStreamingService.findFavoriteTracks(token);
+			musicStreamingService.setToken(token);
+			StreamingResponse<Track> response = musicStreamingService.findFavoriteTracks();
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (JsonProcessingException e) {
 			System.out.println("Erro ao processar JSON de retorno da API Spotify");
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @param token
+	 * @returnResponseEntity<SpotifyResponse<Artist>>
+	 */
+	@GetMapping("/favorite-artists")
+	@ApiOperation(value = "retorna objeto com lista de artistas favoritos do usuário")
+	@ResponseBody
+	public ResponseEntity<StreamingResponse<Artist>> findFavoriteArtists(
+			@RequestHeader(value = "authorization", required = false) @ApiParam("Parâmetro de Token de autenticação. Não é necessário informar, pois o mesmo é extraído do Header da solicitação") String token) {
+		try {
+			musicStreamingService.setToken(token);
+			StreamingResponse<Artist> response = musicStreamingService.findFavoriteArtists();
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (JsonProcessingException e) {
+			System.out.println("Erro ao processar JSON de retorno da API Spotify");
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping("/create-personal-playlist")
+	@ApiOperation(value = "Cria playlist com base nos artistas e músicas favoritas do usuário")
+	
+	public ResponseEntity<Playlist> createPersonalPlaylist(
+			@RequestHeader(value = "authorization", required = false) @ApiParam("Parâmetro de Token de autenticação. Não é necessário informar, pois o mesmo é extraído do Header da solicitação") String token,
+			@RequestBody CreatePlaylistRequest request) {
+		try {
+			musicStreamingService.setToken(token);
+			Playlist playlist = musicStreamingService.createPersonalPlaylist(request);
+			return new ResponseEntity<>(playlist, HttpStatus.OK);
+		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

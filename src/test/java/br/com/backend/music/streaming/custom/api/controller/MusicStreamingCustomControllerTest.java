@@ -3,7 +3,6 @@ package br.com.backend.music.streaming.custom.api.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -16,7 +15,11 @@ import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import br.com.backend.music.streaming.custom.api.domain.spotify.response.TopTracksResponse;
+import br.com.backend.music.streaming.custom.api.domain.request.CreatePlaylistRequest;
+import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
+import br.com.backend.music.streaming.custom.api.domain.spotify.Artist;
+import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
+import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
 import br.com.backend.music.streaming.custom.api.service.MusicStreamingService;
 
 public class MusicStreamingCustomControllerTest {
@@ -41,8 +44,8 @@ public class MusicStreamingCustomControllerTest {
 	@Test
 	public void findFavoriteTracksTest() {
 		try {
-			when(service.findFavoriteTracks(anyString())).thenReturn(new TopTracksResponse());
-			ResponseEntity<TopTracksResponse> response = controller.findFavoriteTracks(null);
+			when(service.findFavoriteTracks()).thenReturn(new StreamingResponse<Track>());
+			ResponseEntity<StreamingResponse<Track>> response = controller.findFavoriteTracks(null);
 			assertNotNull(response);
 		} catch (JsonProcessingException e) {
 			fail("Erro ao processar o JSON no método findFavoriteTracks");
@@ -54,14 +57,79 @@ public class MusicStreamingCustomControllerTest {
 	/**
 	 * Testa o fluxo de exceção do método que retorna as faixas favoritas do usuário
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public void findFavoriteTracksJsonProcessingExceptionTest() {
 		try {
-			when(service.findFavoriteTracks(anyString())).thenThrow(JsonProcessingException.class);
+			when(service.findFavoriteTracks()).thenThrow(JsonProcessingException.class);
 		} catch (JsonProcessingException e) {
 			fail("Erro na execução do teste ");
 		}
-		ResponseEntity<TopTracksResponse> response = controller.findFavoriteTracks(null);
+		ResponseEntity<StreamingResponse<Track>> response = controller.findFavoriteTracks(null);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode() );
+	}
+	
+	/**
+	 * Testa o método do controller que retorna as faixas favoritas do usuário
+	 */
+	@Test
+	public void findFavoriteArtistsTest() {
+		try {
+			when(service.findFavoriteArtists()).thenReturn(new StreamingResponse<Artist>());
+			ResponseEntity<StreamingResponse<Artist>> response = controller.findFavoriteArtists(null);
+			assertNotNull(response);
+		} catch (JsonProcessingException e) {
+			fail("Erro ao processar o JSON no método findFavoriteArtists");
+		} catch (Exception e) {
+			fail("Erro na execução do teste ");
+		}
+	}
+	
+	/**
+	 * Testa o fluxo de exceção do método que retorna as faixas favoritas do usuário
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void findFavoriteArtistsJsonProcessingExceptionTest() {
+		try {
+			when(service.findFavoriteArtists()).thenThrow(JsonProcessingException.class);
+		} catch (JsonProcessingException e) {
+			fail("Erro na execução do teste ");
+		}
+		ResponseEntity<StreamingResponse<Artist>> response = controller.findFavoriteArtists(null);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode() );
+	}
+	
+	/**
+	 * Testa o método do controller que retorna as faixas favoritas do usuário
+	 */
+	@Test
+	public void createPersonalPlaylistTest() {
+		try {
+			CreatePlaylistRequest request = new CreatePlaylistRequest();
+			when(service.createPersonalPlaylist(request)).thenReturn(new Playlist());
+			ResponseEntity<Playlist> response = controller.createPersonalPlaylist(null, request);
+			assertNotNull(response);
+		} catch (JsonProcessingException e) {
+			fail("Erro ao processar o JSON no método findFavoriteArtists");
+		} catch (Exception e) {
+			fail("Erro na execução do teste ");
+		}
+	}
+	
+	/**
+	 * Testa o fluxo de exceção do método que retorna as faixas favoritas do usuário
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void createPersonalPlaylistExceptionTest() {
+		CreatePlaylistRequest request = new CreatePlaylistRequest();
+		try {
+			when(service.createPersonalPlaylist(request)).thenThrow(Exception.class);
+		} catch (JsonProcessingException e) {
+			fail("Erro na execução do teste ");
+		}
+		ResponseEntity<Playlist> response = controller.createPersonalPlaylist(null, request);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode() );
 	}
 

@@ -1,9 +1,17 @@
 spotify:
   api:
-    url: https://api.spotify.com/v1
+    artists: /artists
+    me: /me
+    params:
+      country: BR
+    playlists: /playlists
+    topTracks: /top-tracks
     top:
       tracks: /me/top/tracks 
-      
+      artists: /me/top/artists
+    tracks: /tracks
+    url: https://api.spotify.com/v1
+    users: /users   
 security:
   oauth2:
     client:
@@ -13,7 +21,7 @@ security:
       userAuthorizationUri: https://accounts.spotify.com/authorize
       authenticationScheme: query
       clientAuthenticationScheme: form
-      scope: user-read-private user-read-email user-top-read
+      scope: user-read-private user-read-email user-top-read playlist-modify-private playlist-modify-public
     resource:
       userInfoUri: https://api.spotify.com/v1/me
       
