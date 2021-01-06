@@ -22,10 +22,10 @@ import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
 import br.com.backend.music.streaming.custom.api.service.MusicStreamingService;
 
-public class MusicStreamingCustomControllerTest {
+public class MusicStreamingControllerTest {
 	
 	@InjectMocks
-	private MusicStreamingCustomController controller;
+	private MusicStreamingController controller;
 	
 	@Mock
 	private MusicStreamingService service;

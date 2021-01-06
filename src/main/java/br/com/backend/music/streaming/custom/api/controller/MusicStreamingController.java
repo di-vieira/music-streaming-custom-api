@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiParam;
 
 @RequestMapping("/streaming/api")
 @RestController
-public class MusicStreamingCustomController {
+public class MusicStreamingController {
 
 	@Autowired
 	MusicStreamingService musicStreamingService;
