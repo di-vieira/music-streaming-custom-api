@@ -15,20 +15,25 @@ public class GenreServiceImpl implements GenreService {
 
 	@Autowired
 	private GenreRepository genreRepository;
+	
+	private final String NOT_IN_BLACKLIST = "N";
 
 	@Override
-	public List<Genre> listAllGenres() {
+	public List<Genre> findAllGenres() {
 		return genreRepository.findAll();
 	}
 
 	@Override
-	public List<Genre> listBlacklistedGenres(String inBlacklist) {
-		return genreRepository.findByInBlacklist(inBlacklist);
+	public List<Genre> findBlacklistedGenres() {
+		return genreRepository.findByInBlacklist(NOT_IN_BLACKLIST);
 	}
 
 	@Override
 	public Genre findGenreById(Integer id) {
 		Optional<Genre> genre = genreRepository.findById(id);
+		if(genre.isEmpty()) {
+			genre = Optional.of(new Genre());
+		}
 		return genre.get();
 	}
 
@@ -38,8 +43,12 @@ public class GenreServiceImpl implements GenreService {
 	}
 
 	@Override
-	public void updateGenre(Genre genre) {
-		genreRepository.save(genre);
+	public void updateGenre(Integer id, Genre genre) {
+		Genre gen = findGenreById(id);
+		if(gen.getGenreId() != null) {
+			gen.setInBlacklist(genre.getInBlacklist());
+			genreRepository.save(gen);
+		}
 	}
 
 	@Override

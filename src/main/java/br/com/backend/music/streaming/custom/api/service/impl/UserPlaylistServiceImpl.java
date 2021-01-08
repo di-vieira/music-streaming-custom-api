@@ -17,13 +17,16 @@ public class UserPlaylistServiceImpl implements UserPlaylistService{
 	UserPlaylistRepository userPlaylistRepository;
 	
 	@Override
-	public List<UserPlaylist> listAllUserPlaylists() {
+	public List<UserPlaylist> findAllUserPlaylists() {
 		return userPlaylistRepository.findAll();
 	}
 
 	@Override
 	public UserPlaylist findUserPlaylistById(String id) {
 		Optional<UserPlaylist> userPlaylist = userPlaylistRepository.findById(id);
+		if(userPlaylist.isEmpty()) {
+			userPlaylist = Optional.of(new UserPlaylist());
+		}
 		return userPlaylist.get();
 	}
 
@@ -34,7 +37,12 @@ public class UserPlaylistServiceImpl implements UserPlaylistService{
 
 	@Override
 	public void updateUserPlaylist(UserPlaylist userPlaylist) {
-		userPlaylistRepository.save(userPlaylist);
+		UserPlaylist userPlaylistToUpdate = findUserPlaylistById(userPlaylist.getUserId());
+		if(userPlaylistToUpdate.getUserId() != null) {
+			userPlaylistToUpdate.setPlaylistId(userPlaylist.getPlaylistId());
+			userPlaylistToUpdate.setIncludeDate(userPlaylist.getIncludeDate());
+			userPlaylistRepository.save(userPlaylistToUpdate);
+		}
 	}
 
 	@Override
