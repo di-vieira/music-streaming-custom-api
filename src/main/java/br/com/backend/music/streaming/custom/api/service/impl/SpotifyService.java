@@ -1,8 +1,10 @@
 package br.com.backend.music.streaming.custom.api.service.impl;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.backend.music.streaming.custom.api.domain.entity.UserPlaylist;
 import br.com.backend.music.streaming.custom.api.domain.request.CreatePlaylistRequest;
 import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
 import br.com.backend.music.streaming.custom.api.domain.response.TracksResponse;
@@ -35,6 +38,7 @@ import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
 import br.com.backend.music.streaming.custom.api.domain.spotify.User;
 import br.com.backend.music.streaming.custom.api.service.MusicStreamingService;
+import br.com.backend.music.streaming.custom.api.service.UserPlaylistService;
 
 @Service
 public class SpotifyService implements MusicStreamingService {
@@ -100,10 +104,39 @@ public class SpotifyService implements MusicStreamingService {
 	private String spotifyCountry;
 
 	/**
-	 * Constante para propriedade de do Token de Autorização incluído no Header
+	 * Constant to identify Authorization attribute included in Header
 	 */
 	private final String AUTHORIZATION = "Authorization";
 
+	/**
+	 * Constant to identify the maximum number allowed to retrieve tracks from favorite 
+	 * tracks list or favorite artists list
+	 */
+	private final Integer NUMBER_MAX_OF_TRACKS = 30; 
+	
+	/**
+	 * Minimum value for range used to get random artist top track
+	 */
+	private final Integer MIN_RANGE = 0;
+	
+	/**
+	 * Maximum value for range used to get random artist top track
+	 */
+	private final Integer MAX_RANGE = 4;
+	
+	/**
+	 * Query parameter to set the number of entities to return
+	 */
+	private final String LIMIT = "limit";
+	
+	/**
+	 * Query parameter to set the country of artist's top tracks
+	 */
+	private final String COUNTRY = "country";
+	
+	@Autowired
+	private UserPlaylistService userPlaylistService;
+	
 	@Autowired
 	private RestTemplate restTemplate;
 
@@ -115,11 +148,10 @@ public class SpotifyService implements MusicStreamingService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public StreamingResponse<Track> findFavoriteTracks() throws JsonProcessingException {
-
-		// Consulta a API do Spotify para retornar as top tracks do usuário logado
-		ResponseEntity<String> response = restTemplate.exchange(spotifyApiUrl + spotifyTopTracks, HttpMethod.GET,
-				getHttpEntity(), String.class);
-
+		Map<String, String> queryParameters = new HashMap<String, String>(); 
+		queryParameters.put(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
+		String uri = buildUriString(spotifyApiUrl + spotifyTopTracks, queryParameters);
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, getHttpEntity(), String.class);
 		return parseStreamingResponse(response.getBody(), Track.class);
 	}
 
@@ -129,51 +161,28 @@ public class SpotifyService implements MusicStreamingService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public StreamingResponse<Artist> findFavoriteArtists() throws JsonProcessingException {
-
-		// Consulta a API do Spotify para retornar os top artistas do usuário logado
-		ResponseEntity<String> response = restTemplate.exchange(spotifyApiUrl + spotifyTopArtists, HttpMethod.GET,
-				getHttpEntity(), String.class);
-
+		Map<String, String> queryParameters = new HashMap<String, String>(); 
+		queryParameters.put(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
+		String uri = buildUriString(spotifyApiUrl + spotifyTopArtists, queryParameters);
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, getHttpEntity(), String.class);
 		return parseStreamingResponse(response.getBody(), Artist.class);
 	}
 
+	/**
+	 * Creates a new playlist in user's spotify account based on user's top tracks and top artists
+	 */
 	@Override
 	public Playlist createPersonalPlaylist(CreatePlaylistRequest request) throws JsonProcessingException {
-
-		// find Top Artists
-		StreamingResponse<Artist> favoriteArtists = findFavoriteArtists();
-
-		// find Top Tracks
-		StreamingResponse<Track> favoriteTracks = findFavoriteTracks();
-
-		// Get User data
+		List<Track> tracksForPlaylist = getTracksForPlaylist();
 		User user = findUser();
-
-		// Busca Gêneros de maior evidência
-		// List<Entry<String, Integer>> genres = genresCount(favoriteArtists.getItems(),
-		// favoriteTracks.getItems());
-
-		// Generate a list of tracks to include in playlist
-		Set<Track> tracksForPlaylist = getTracksForPlaylist(favoriteArtists.getItems(), favoriteTracks.getItems());
-
-		// Generates URI to call service to create playlist
 		String uri = spotifyApiUrl + spotifyUsers + "/" + user.getId() + spotifyPlaylists;
-		
-		// Creates Playlist
 		ResponseEntity<Playlist> playlistResponse = restTemplate.exchange(uri, HttpMethod.POST, getHttpEntity(request), Playlist.class);
-
-		// Add tracks based on top tracks an top artists from user
+		Playlist playlist = playlistResponse.getBody();
 		if (playlistResponse.getStatusCode().equals(HttpStatus.CREATED)) {
-			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(spotifyApiUrl + spotifyPlaylists + "/" + playlistResponse.getBody().getId() + spotifyTracks);
-			List<String> trackUris = new ArrayList<String>();
-			for(Track track : tracksForPlaylist) {
-				trackUris.add(track.getURI());
-			}
-			builder.queryParam("uris", String.join(",", trackUris));
-			restTemplate.exchange(builder.toUriString(), HttpMethod.POST, getHttpEntity(), String.class);
+			addTracksInPlaylist(playlist.getId(), tracksForPlaylist);
+			userPlaylistService.saveUserPlaylist(new UserPlaylist(user.getId(), playlist.getId(), LocalDate.now()));
 		}
-		
-		return playlistResponse.getBody();
+		return playlist;
 	}
 
 	/**
@@ -183,12 +192,21 @@ public class SpotifyService implements MusicStreamingService {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	
+	public void addTracksInPlaylist(String playlistId, List<Track> tracksForPlaylist) {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(spotifyApiUrl + spotifyPlaylists + "/" + playlistId + spotifyTracks);
+		List<String> trackUris = new ArrayList<String>();
+		for(Track track : tracksForPlaylist) {
+			trackUris.add(track.getURI());
+		}
+		builder.queryParam("uris", String.join(",", trackUris));
+		restTemplate.exchange(builder.toUriString(), HttpMethod.POST, getHttpEntity(), String.class);
+	}
 
 	/**
 	 * @return User
 	 */
 	public User findUser() {
-
 		return restTemplate.exchange(spotifyApiUrl + spotifyMe, HttpMethod.GET, getHttpEntity(), User.class).getBody();
 	}
 
@@ -199,7 +217,6 @@ public class SpotifyService implements MusicStreamingService {
 	 * @return
 	 */
 	public Artist findArtistById(String id) {
-
 		return restTemplate.exchange(spotifyApiUrl + spotifyArtists + "/" + id, HttpMethod.GET, getHttpEntity(), Artist.class).getBody();
 	}
 
@@ -207,13 +224,12 @@ public class SpotifyService implements MusicStreamingService {
 	 * @param id
 	 * @return
 	 */
-	public List<Track> findArtistTopTracks(String id) throws JsonProcessingException{
-		String uri = spotifyApiUrl + spotifyArtists + "/" + id + spotifyArtistTopTracks;
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri);
-		builder.queryParam("country", spotifyCountry);
-
-		ResponseEntity<TracksResponse> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, getHttpEntity(), TracksResponse.class);		
-		
+	private List<Track> findArtistTopTracks(String id) {
+		Map<String, String> queryParameters = new HashMap<String, String>(); 
+		queryParameters.put(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
+		queryParameters.put(COUNTRY, spotifyCountry);
+		String uri = buildUriString(spotifyApiUrl + spotifyArtists + "/" + id + spotifyArtistTopTracks, queryParameters);
+		ResponseEntity<TracksResponse> response = restTemplate.exchange(uri, HttpMethod.GET, getHttpEntity(), TracksResponse.class);		
 		return response.getBody().getTracks();
 	}
 
@@ -224,39 +240,41 @@ public class SpotifyService implements MusicStreamingService {
 	 * @param tracks
 	 * @return
 	 */
-	public Set<Track> getTracksForPlaylist(List<Artist> artists, List<Track> tracks) throws JsonProcessingException{
-
-		Set<Track> playlistTracks = new HashSet<Track>();
-		int countTracks = 0;
-		// Includes up to 20 tracks from different artists from top tracks
-		for (Track track : tracks) {
-			// Verifies if there's some track from same artist in playlist
+	private List<Track> getTracksForPlaylist() throws JsonProcessingException{
+		List<Track> playlistTracks = new ArrayList<Track>();
+		playlistTracks.addAll(getTracksFromTopArtistsToPlaylist());
+		playlistTracks.addAll(getTracksFromTopTracksToPlaylist());
+		return removeDuplicatedTracks(playlistTracks);
+	}
+	
+	
+	/**
+	 * Get the 
+	 * @return
+	 * @throws JsonProcessingException
+	 */
+	private List<Track> getTracksFromTopTracksToPlaylist() throws JsonProcessingException {
+		List<Track> playlistTracks = new ArrayList<Track>();
+		StreamingResponse<Track> favoriteTracks = findFavoriteTracks();
+		for (Track track : favoriteTracks.getItems()) {
 			if (!containsArtist(playlistTracks, track.getArtists().get(0))) {
 				playlistTracks.add(track);
-				countTracks++;
-				if (countTracks >= 20) {
-					break;
-				}
 			}
 		}
-
-		countTracks = 0;
-		// Includes up to 20 tracks from artist's top tracks
-		for (Artist artist : artists) {
-			List<Track> artistTopTracks = findArtistTopTracks(artist.getId());
-			for (Track artistTrack : artistTopTracks) {
-				// Verifies if the track is duplicated in playlist
-				if (!containsTrack(playlistTracks, artistTrack)) {
-					playlistTracks.add(artistTrack);
-					countTracks++;
-					break;
-				}
-			}
-			if (countTracks >= 20) {
-				break;
-			}
+		return playlistTracks;
+	}
+	
+	/**
+	 * @return
+	 * @throws JsonProcessingException
+	 */
+	private List<Track> getTracksFromTopArtistsToPlaylist() throws JsonProcessingException {
+		List<Track> playlistTracks = new ArrayList<Track>();
+		StreamingResponse<Artist> favoriteArtists = findFavoriteArtists();
+		for (Artist artist : favoriteArtists.getItems()) {
+			playlistTracks.add(findArtistTopTracks(artist.getId())
+					.get((int) (Math.random() * (MAX_RANGE - MIN_RANGE)) + MIN_RANGE));
 		}
-
 		return playlistTracks;
 	}
 
@@ -268,9 +286,11 @@ public class SpotifyService implements MusicStreamingService {
 	 * @param artist
 	 * @return
 	 */
-	public Boolean containsArtist(Set<Track> playlistTracks, Artist artist) {
+	private Boolean containsArtist(List<Track> playlistTracks, Artist artist) {
 		for (Track track : playlistTracks) {
-			if (track.getArtists().contains(artist)) {
+			Comparator<Artist> artistComparator = 
+					(Artist artist1, Artist artist2) -> artist1.getId().compareTo(artist.getId());			
+			if (artistComparator.compare(track.getArtists().get(0), artist) == 0) {
 				return Boolean.TRUE;
 			}
 		}
@@ -284,84 +304,27 @@ public class SpotifyService implements MusicStreamingService {
 	 * @param trackToAdd
 	 * @return
 	 */
-	public Boolean containsTrack(Set<Track> playlistTracks, Track trackToAdd) {
+	private Boolean containsTrack(List<Track> playlistTracks, Track trackToAdd) {
 		for (Track track : playlistTracks) {
-			if (track.equals(trackToAdd)) {
+			Comparator<Track> trackComparator =
+					(Track track1, Track track2) -> track1.getId().compareTo(track2.getId());
+			if (trackComparator.compare(track, trackToAdd) == 0) {
 				return Boolean.TRUE;
 			}
 		}
-
 		return Boolean.FALSE;
 	}
-
-	/**
-	 * Retorna as ocorrencias de cada gênero, dentro dos artistas e faixas favoritas
-	 * do usuário
-	 * 
-	 * @param artists
-	 * @param tracks
-	 * @return
-	 */
-	public List<Entry<String, Integer>> genresCount(List<Artist> artists, List<Track> tracks) {
-		Map<String, Integer> ocurrenciesByGenre = new TreeMap<String, Integer>();
-
-		List<String> genres = new ArrayList<String>();
-		genres.addAll(getGenresByTopArtists(artists));
-		genres.addAll(getGenresByTopTracks(tracks));
-
-		Set<String> distinctGenres = new HashSet<>(genres);
-		for (String genre : distinctGenres) {
-			ocurrenciesByGenre.put(genre, Collections.frequency(genres, genre));
-		}
-
-		// Ordena lista de gêneros
-		List<Entry<String, Integer>> sortedGenres = new ArrayList<Entry<String, Integer>>(
-				ocurrenciesByGenre.entrySet());
-		Collections.sort(sortedGenres, new Comparator<Entry<String, Integer>>() {
-			@Override
-			public int compare(Entry<String, Integer> genre1, Entry<String, Integer> genre2) {
-				return genre2.getValue().compareTo(genre1.getValue());
-			}
-		});
-		return sortedGenres;
-	}
-
-	/**
-	 * Retorna lista com todos os gêneros contidos dos top artistas do usuário
-	 * 
-	 * @param artists
-	 * @return
-	 */
-	public List<String> getGenresByTopArtists(List<Artist> artists) {
-		List<String> genres = new ArrayList<String>();
-
-		for (Artist artist : artists) {
-			genres.addAll(artist.getGenres());
-		}
-
-		return genres;
-	}
-
-	/**
-	 * Retorna Lista com todos os gêneros contidos nas top tracks do usuário
-	 * 
-	 * @param tracks
-	 * @return
-	 */
-	public List<String> getGenresByTopTracks(List<Track> tracks) {
-		List<String> genres = new ArrayList<String>();
-
-		for (Track track : tracks) {
-			List<Artist> artists = track.getArtists();
-
-			for (Artist artist : artists) {
-				artist = findArtistById(artist.getId());
-				genres.addAll(artist.getGenres());
+	
+	private List<Track> removeDuplicatedTracks(List<Track> tracks){
+		List<Track> nonDuplicatedTracks = new ArrayList<Track>();
+		for(Track track : tracks) {
+			if(!containsTrack(nonDuplicatedTracks, track)) {
+				nonDuplicatedTracks.add(track);
 			}
 		}
-
-		return genres;
+		return nonDuplicatedTracks;
 	}
+	
 
 	/**
 	 * Creates a HTTP Entity to consume Spotify API
@@ -404,14 +367,24 @@ public class SpotifyService implements MusicStreamingService {
 	 * @throws JsonProcessingException
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private <T> StreamingResponse parseStreamingResponse(String json, Class<T> returnType)
-			throws JsonProcessingException {
-
+	private <T> StreamingResponse parseStreamingResponse(String json, Class<T> returnType) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		JavaType type = mapper.getTypeFactory().constructParametricType(StreamingResponse.class, returnType);
 		mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
 		return (StreamingResponse<T>) mapper.readValue(json, type);
+	}
+	
+	/**
+	 * @param uri
+	 * @param params
+	 * @return
+	 */
+	private String buildUriString(String uri, Map<String, String> params) {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri);
+		for(Map.Entry<String, String> param : params.entrySet()) {
+			builder.queryParam(param.getKey(), param.getValue());
+		}
+		return builder.toUriString();
 	}
 
 }

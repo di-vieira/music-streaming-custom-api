@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.backend.music.streaming.custom.api.domain.entity.UserPlaylist;
 import br.com.backend.music.streaming.custom.api.domain.request.CreatePlaylistRequest;
 import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
 import br.com.backend.music.streaming.custom.api.domain.response.TracksResponse;
@@ -35,6 +37,7 @@ import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
 import br.com.backend.music.streaming.custom.api.domain.spotify.User;
 import br.com.backend.music.streaming.custom.api.service.MusicStreamingService;
+import br.com.backend.music.streaming.custom.api.service.UserPlaylistService;
 
 public class SpotifyServiceTest {
 
@@ -43,6 +46,9 @@ public class SpotifyServiceTest {
 
 	@Mock
 	private RestTemplate restTemplate;
+	
+	@Mock
+	private UserPlaylistService userPlaylistService;
 
 	/**
 	 * Inicializa os Mocks
@@ -234,6 +240,700 @@ public class SpotifyServiceTest {
 			"            \"track_number\": 2,\n" + 
 			"            \"type\": \"track\",\n" + 
 			"            \"uri\": \"spotify:track:7ACxUo21jtTHzy7ZEV56vU\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/6eh82ojicL8RSJF7GkYTh7\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/6eh82ojicL8RSJF7GkYTh7\",\n" + 
+			"                \"id\": \"6eh82ojicL8RSJF7GkYTh7\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273c2b61984b54ad58c8d6fdd19\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02c2b61984b54ad58c8d6fdd19\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851c2b61984b54ad58c8d6fdd19\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"No More Tears (Expanded Edition)\",\n" + 
+			"                \"release_date\": \"1991-09-17\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 13,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:6eh82ojicL8RSJF7GkYTh7\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 251866,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM19100017\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/0S3gpZzlT9Hb7CCSV2owX7\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/0S3gpZzlT9Hb7CCSV2owX7\",\n" + 
+			"            \"id\": \"0S3gpZzlT9Hb7CCSV2owX7\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"Mama, I'm Coming Home\",\n" + 
+			"            \"popularity\": 70,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/30222e11e6be0d1a8e26ae570fda5dd993a7fd6b?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 3,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:0S3gpZzlT9Hb7CCSV2owX7\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/6eh82ojicL8RSJF7GkYTh7\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/6eh82ojicL8RSJF7GkYTh7\",\n" + 
+			"                \"id\": \"6eh82ojicL8RSJF7GkYTh7\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273c2b61984b54ad58c8d6fdd19\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02c2b61984b54ad58c8d6fdd19\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851c2b61984b54ad58c8d6fdd19\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"No More Tears (Expanded Edition)\",\n" + 
+			"                \"release_date\": \"1991-09-17\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 13,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:6eh82ojicL8RSJF7GkYTh7\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 443240,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM19100025\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/7w6PJe5KBPyvuRYxFkPssC\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/7w6PJe5KBPyvuRYxFkPssC\",\n" + 
+			"            \"id\": \"7w6PJe5KBPyvuRYxFkPssC\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"No More Tears\",\n" + 
+			"            \"popularity\": 68,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/d84019910d52e25d7cf0a40e558bd3d6ec97f4f6?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 5,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:7w6PJe5KBPyvuRYxFkPssC\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/537qKeG5gbEvKJpQ4Qmszn\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/537qKeG5gbEvKJpQ4Qmszn\",\n" + 
+			"                \"id\": \"537qKeG5gbEvKJpQ4Qmszn\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273813b607b3b7e094c306af4fd\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02813b607b3b7e094c306af4fd\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851813b607b3b7e094c306af4fd\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"Bark At The Moon (Expanded Edition)\",\n" + 
+			"                \"release_date\": \"1983-12-10\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 10,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:537qKeG5gbEvKJpQ4Qmszn\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 257120,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM18300021\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/2E7W1X4maFFcjHrVrFA7Vs\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/2E7W1X4maFFcjHrVrFA7Vs\",\n" + 
+			"            \"id\": \"2E7W1X4maFFcjHrVrFA7Vs\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"Bark at the Moon\",\n" + 
+			"            \"popularity\": 67,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/428cbc8109df061b2b6dc9ed65ba4dd2888d8116?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 1,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:2E7W1X4maFFcjHrVrFA7Vs\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/6olpeE5qTK6hkzN8PhwEBM\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/6olpeE5qTK6hkzN8PhwEBM\",\n" + 
+			"                \"id\": \"6olpeE5qTK6hkzN8PhwEBM\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273962c158ac47845e7051fae4e\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02962c158ac47845e7051fae4e\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851962c158ac47845e7051fae4e\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"Down To Earth\",\n" + 
+			"                \"release_date\": \"2001-10-16\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 11,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:6olpeE5qTK6hkzN8PhwEBM\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 284906,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM10110213\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/78PKCefXwDLbl4FVO1Pjzh\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/78PKCefXwDLbl4FVO1Pjzh\",\n" + 
+			"            \"id\": \"78PKCefXwDLbl4FVO1Pjzh\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"Dreamer\",\n" + 
+			"            \"popularity\": 67,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/9af3f27d9ee94fda996cb797aa7881217e0db796?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 3,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:78PKCefXwDLbl4FVO1Pjzh\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/4qUMByJ3Pk94BFnCmGaUPS\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/4qUMByJ3Pk94BFnCmGaUPS\",\n" + 
+			"                \"id\": \"4qUMByJ3Pk94BFnCmGaUPS\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273475ca6e5c1ce0ef70740c3c6\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02475ca6e5c1ce0ef70740c3c6\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851475ca6e5c1ce0ef70740c3c6\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"Blizzard Of Ozz (40th Anniversary Expanded Edition)\",\n" + 
+			"                \"release_date\": \"2020-09-18\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 19,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:4qUMByJ3Pk94BFnCmGaUPS\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 302647,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM11002849\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/2ov8L95QD25TLpZAZPYWXL\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/2ov8L95QD25TLpZAZPYWXL\",\n" + 
+			"            \"id\": \"2ov8L95QD25TLpZAZPYWXL\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"Mr. Crowley\",\n" + 
+			"            \"popularity\": 64,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/592fab429bc7a84d1900a0e98cfc44192610842a?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 6,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:2ov8L95QD25TLpZAZPYWXL\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/2IPIumpbhrtBvjyzIgGE9j\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/2IPIumpbhrtBvjyzIgGE9j\",\n" + 
+			"                \"id\": \"2IPIumpbhrtBvjyzIgGE9j\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273c8dec214036a4cfb3dcf143a\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02c8dec214036a4cfb3dcf143a\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851c8dec214036a4cfb3dcf143a\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"The Ultimate Sin\",\n" + 
+			"                \"release_date\": \"1986-02-22\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 9,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:2IPIumpbhrtBvjyzIgGE9j\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 256293,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM18600039\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/31dqpLUModJWNbxrXu6TWd\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/31dqpLUModJWNbxrXu6TWd\",\n" + 
+			"            \"id\": \"31dqpLUModJWNbxrXu6TWd\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"Shot in the Dark\",\n" + 
+			"            \"popularity\": 64,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/0367a1bf292e031d23fff827bffbe1e97dd9cfa7?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 9,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:31dqpLUModJWNbxrXu6TWd\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/6wiS0vTk9GfsiUKJEOav8Z\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/6wiS0vTk9GfsiUKJEOav8Z\",\n" + 
+			"                \"id\": \"6wiS0vTk9GfsiUKJEOav8Z\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273cffbd6e4a4dbdfd0d5ffd7a4\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02cffbd6e4a4dbdfd0d5ffd7a4\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851cffbd6e4a4dbdfd0d5ffd7a4\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"Black Rain (Expanded Edition)\",\n" + 
+			"                \"release_date\": \"2007-05-18\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 12,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:6wiS0vTk9GfsiUKJEOav8Z\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 239826,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM10701376\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/5axOkQnmQmwtjr4bv1Xt7i\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/5axOkQnmQmwtjr4bv1Xt7i\",\n" + 
+			"            \"id\": \"5axOkQnmQmwtjr4bv1Xt7i\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"I Don't Wanna Stop\",\n" + 
+			"            \"popularity\": 63,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/9a5c54f15cea386d7530cc17857721ed6f69171a?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 2,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:5axOkQnmQmwtjr4bv1Xt7i\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/2x2cG56QicVfymWnRF0Nmj\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/2x2cG56QicVfymWnRF0Nmj\",\n" + 
+			"                \"id\": \"2x2cG56QicVfymWnRF0Nmj\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273048dd3ae0e24cf27db6ca17d\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02048dd3ae0e24cf27db6ca17d\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851048dd3ae0e24cf27db6ca17d\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"Ordinary Man\",\n" + 
+			"                \"release_date\": \"2020-02-21\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 11,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:2x2cG56QicVfymWnRF0Nmj\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                },\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/3PhoLpVuITZKcymswpck5b\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/3PhoLpVuITZKcymswpck5b\",\n" + 
+			"                    \"id\": \"3PhoLpVuITZKcymswpck5b\",\n" + 
+			"                    \"name\": \"Elton John\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:3PhoLpVuITZKcymswpck5b\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 301730,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM11913617\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/7CR5qGZ2eJwYrFQ8UmHuaR\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/7CR5qGZ2eJwYrFQ8UmHuaR\",\n" + 
+			"            \"id\": \"7CR5qGZ2eJwYrFQ8UmHuaR\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"Ordinary Man (feat. Elton John)\",\n" + 
+			"            \"popularity\": 61,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/cf0183a8adad9f08f986970fb5a24b98045e14ca?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 4,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:7CR5qGZ2eJwYrFQ8UmHuaR\"\n" + 
+			"        },\n" + 
+			"        {\n" + 
+			"            \"album\": {\n" + 
+			"                \"album_type\": \"album\",\n" + 
+			"                \"artists\": [\n" + 
+			"                    {\n" + 
+			"                        \"external_urls\": {\n" + 
+			"                            \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                        },\n" + 
+			"                        \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                        \"name\": \"Ozzy Osbourne\",\n" + 
+			"                        \"type\": \"artist\",\n" + 
+			"                        \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"external_urls\": {\n" + 
+			"                    \"spotify\": \"https://open.spotify.com/album/2x2cG56QicVfymWnRF0Nmj\"\n" + 
+			"                },\n" + 
+			"                \"href\": \"https://api.spotify.com/v1/albums/2x2cG56QicVfymWnRF0Nmj\",\n" + 
+			"                \"id\": \"2x2cG56QicVfymWnRF0Nmj\",\n" + 
+			"                \"images\": [\n" + 
+			"                    {\n" + 
+			"                        \"height\": 640,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d0000b273048dd3ae0e24cf27db6ca17d\",\n" + 
+			"                        \"width\": 640\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 300,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00001e02048dd3ae0e24cf27db6ca17d\",\n" + 
+			"                        \"width\": 300\n" + 
+			"                    },\n" + 
+			"                    {\n" + 
+			"                        \"height\": 64,\n" + 
+			"                        \"url\": \"https://i.scdn.co/image/ab67616d00004851048dd3ae0e24cf27db6ca17d\",\n" + 
+			"                        \"width\": 64\n" + 
+			"                    }\n" + 
+			"                ],\n" + 
+			"                \"name\": \"Ordinary Man\",\n" + 
+			"                \"release_date\": \"2020-02-21\",\n" + 
+			"                \"release_date_precision\": \"day\",\n" + 
+			"                \"total_tracks\": 11,\n" + 
+			"                \"type\": \"album\",\n" + 
+			"                \"uri\": \"spotify:album:2x2cG56QicVfymWnRF0Nmj\"\n" + 
+			"            },\n" + 
+			"            \"artists\": [\n" + 
+			"                {\n" + 
+			"                    \"external_urls\": {\n" + 
+			"                        \"spotify\": \"https://open.spotify.com/artist/6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                    },\n" + 
+			"                    \"href\": \"https://api.spotify.com/v1/artists/6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"id\": \"6ZLTlhejhndI4Rh53vYhrY\",\n" + 
+			"                    \"name\": \"Ozzy Osbourne\",\n" + 
+			"                    \"type\": \"artist\",\n" + 
+			"                    \"uri\": \"spotify:artist:6ZLTlhejhndI4Rh53vYhrY\"\n" + 
+			"                }\n" + 
+			"            ],\n" + 
+			"            \"disc_number\": 1,\n" + 
+			"            \"duration_ms\": 297682,\n" + 
+			"            \"explicit\": false,\n" + 
+			"            \"external_ids\": {\n" + 
+			"                \"isrc\": \"USSM11913615\"\n" + 
+			"            },\n" + 
+			"            \"external_urls\": {\n" + 
+			"                \"spotify\": \"https://open.spotify.com/track/0LagWpYHMaQjbCeAIoOKVg\"\n" + 
+			"            },\n" + 
+			"            \"href\": \"https://api.spotify.com/v1/tracks/0LagWpYHMaQjbCeAIoOKVg\",\n" + 
+			"            \"id\": \"0LagWpYHMaQjbCeAIoOKVg\",\n" + 
+			"            \"is_local\": false,\n" + 
+			"            \"is_playable\": true,\n" + 
+			"            \"name\": \"Under the Graveyard\",\n" + 
+			"            \"popularity\": 61,\n" + 
+			"            \"preview_url\": \"https://p.scdn.co/mp3-preview/14ac13fbae820a0f2466b4d93fb3d969f80bf728?cid=08c5fd71eb9d45fd9cf760e8d0d62040\",\n" + 
+			"            \"track_number\": 5,\n" + 
+			"            \"type\": \"track\",\n" + 
+			"            \"uri\": \"spotify:track:0LagWpYHMaQjbCeAIoOKVg\"\n" + 
 			"        }\n" + 
 			"    ]\n" + 
 			"}";
@@ -367,6 +1067,8 @@ public class SpotifyServiceTest {
 	@Test
 	public void createPersonalPlaylistTest() {
 		
+		final Integer NUMBER_MAX_OF_TRACKS = 30;
+		
 		try {
 			User user = new User();
 			user.setId("12150045193");
@@ -389,25 +1091,28 @@ public class SpotifyServiceTest {
 			musicStreamingService.setToken(token);
 
 			when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(Playlist.class)))
-					.thenReturn(new ResponseEntity<Playlist>(playlist, HttpStatus.OK));
+					.thenReturn(new ResponseEntity<Playlist>(playlist, HttpStatus.CREATED));
 			
-			when(restTemplate.exchange("https://api.spotify.com/v1/users/12150045193/playlists", 
-					HttpMethod.POST, new HttpEntity<Object>(request, headers), String.class))
-					.thenReturn(new ResponseEntity<String>(
+			when(restTemplate.exchange("https://api.spotify.com/v1/users/12150045193/playlists", HttpMethod.POST, 
+					new HttpEntity<Object>(request, headers), String.class)).thenReturn(new ResponseEntity<String>(
 							"{ \"snaphot_id\": \"JbtmHBDBAYu3/bt8BOXKjzKx3i0b6LCa/wVjyl6qQ2Yf6nFXkbmzuEa+ZI/U1yF+\"}",
 							HttpStatus.OK));
 			
-			when(restTemplate.exchange("https://api.spotify.com/v1/me/top/artists", HttpMethod.GET, new HttpEntity<Object>(headers), String.class))
-			.thenReturn(new ResponseEntity<String>(jsonMockStreamingArtists, HttpStatus.OK));
+			when(restTemplate.exchange("https://api.spotify.com/v1/me/top/artists?limit=" + NUMBER_MAX_OF_TRACKS, HttpMethod.GET, 
+					new HttpEntity<Object>(headers), String.class)).thenReturn(
+							new ResponseEntity<String>(jsonMockStreamingArtists, HttpStatus.OK));
 	
-			when(restTemplate.exchange("https://api.spotify.com/v1/me/top/tracks", HttpMethod.GET, new HttpEntity<Object>(headers), String.class))
-			.thenReturn(new ResponseEntity<String>(jsonMockStreamingTracks, HttpStatus.OK));
+			when(restTemplate.exchange("https://api.spotify.com/v1/me/top/tracks?limit=" + NUMBER_MAX_OF_TRACKS, HttpMethod.GET, 
+					new HttpEntity<Object>(headers), String.class)).thenReturn(
+							new ResponseEntity<String>(jsonMockStreamingTracks, HttpStatus.OK));
 	
 			when(restTemplate.exchange("https://api.spotify.com/v1/me", HttpMethod.GET, new HttpEntity<Object>(headers), User.class))
 			.thenReturn(new ResponseEntity<User>(user, HttpStatus.OK));
 			
 			when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(TracksResponse.class)))
 			.thenReturn(new ResponseEntity<TracksResponse>(mockTracksResponse, HttpStatus.OK));
+			
+			doNothing().when(userPlaylistService).saveUserPlaylist(any(UserPlaylist.class));
 			
 			Playlist response = musicStreamingService.createPersonalPlaylist(request);
 			

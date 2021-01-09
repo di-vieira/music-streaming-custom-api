@@ -12,6 +12,10 @@ import io.swagger.annotations.ApiParam;
  * @author diegovieira
  *
  */
+/**
+ * @author diegovieira
+ *
+ */
 @Entity
 @Table(name = "GENRE")
 public class Genre {
@@ -37,6 +41,17 @@ public class Genre {
 	@ApiParam("Flag que indica se o gênero está na blacklist (Valores possíveis: S ou N)")
 	@Column(name = "IN_BLACKLIST")
 	private String inBlacklist;
+	
+	public Genre() {
+		
+	}
+
+	public Genre(Integer genreId, String genreName, String inBlacklist) {
+		super();
+		this.genreId = genreId;
+		this.genreName = genreName;
+		this.inBlacklist = inBlacklist;
+	}
 
 	/**
 	 * @return the genreId
