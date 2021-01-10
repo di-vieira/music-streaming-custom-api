@@ -1,10 +1,8 @@
-package br.com.backend.music.streaming.custom.api.domain.response;
+package br.com.backend.music.streaming.custom.api.domain.spotify;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
 
 /**
  * Response class for services which returns tracks

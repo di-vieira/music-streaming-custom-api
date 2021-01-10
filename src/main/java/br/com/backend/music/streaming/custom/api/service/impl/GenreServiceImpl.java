@@ -16,7 +16,7 @@ public class GenreServiceImpl implements GenreService {
 	@Autowired
 	private GenreRepository genreRepository;
 	
-	private final String NOT_IN_BLACKLIST = "N";
+	private final String IN_BLACKLIST = "S";
 
 	@Override
 	public List<Genre> findAllGenres() {
@@ -25,7 +25,7 @@ public class GenreServiceImpl implements GenreService {
 
 	@Override
 	public List<Genre> findBlacklistedGenres() {
-		return genreRepository.findByInBlacklist(NOT_IN_BLACKLIST);
+		return genreRepository.findByInBlacklist(IN_BLACKLIST);
 	}
 
 	@Override

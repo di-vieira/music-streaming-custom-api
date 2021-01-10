@@ -6,12 +6,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -29,19 +33,32 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.backend.music.streaming.custom.api.domain.entity.Genre;
 import br.com.backend.music.streaming.custom.api.domain.entity.UserPlaylist;
-import br.com.backend.music.streaming.custom.api.domain.request.CreatePlaylistRequest;
-import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
-import br.com.backend.music.streaming.custom.api.domain.response.TracksResponse;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Artist;
+import br.com.backend.music.streaming.custom.api.domain.spotify.CreatePlaylistRequest;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
+import br.com.backend.music.streaming.custom.api.domain.spotify.StreamingResponse;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
+import br.com.backend.music.streaming.custom.api.domain.spotify.TracksResponse;
 import br.com.backend.music.streaming.custom.api.domain.spotify.User;
+import br.com.backend.music.streaming.custom.api.service.GenreService;
 import br.com.backend.music.streaming.custom.api.service.MusicStreamingService;
 import br.com.backend.music.streaming.custom.api.service.UserPlaylistService;
 
 @Service
 public class SpotifyService implements MusicStreamingService {
+
+	@Autowired
+	private UserPlaylistService userPlaylistService;
+	
+	@Autowired
+	private GenreService genreService;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	private Logger logger = LoggerFactory.getLogger(SpotifyService.class);
 
 	/**
 	 * URL da API do Spotify
@@ -134,12 +151,6 @@ public class SpotifyService implements MusicStreamingService {
 	 */
 	private final String COUNTRY = "country";
 	
-	@Autowired
-	private UserPlaylistService userPlaylistService;
-	
-	@Autowired
-	private RestTemplate restTemplate;
-
 	private String token;
 
 	/**
@@ -147,11 +158,10 @@ public class SpotifyService implements MusicStreamingService {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public StreamingResponse<Track> findFavoriteTracks() throws JsonProcessingException {
-		Map<String, String> queryParameters = new HashMap<String, String>(); 
-		queryParameters.put(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
-		String uri = buildUriString(spotifyApiUrl + spotifyTopTracks, queryParameters);
-		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, getHttpEntity(), String.class);
+	public StreamingResponse<Track> findFavoriteTracks() {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(spotifyApiUrl + spotifyTopTracks);
+		builder.queryParam(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
+		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, getHttpEntity(), String.class);
 		return parseStreamingResponse(response.getBody(), Track.class);
 	}
 
@@ -160,11 +170,10 @@ public class SpotifyService implements MusicStreamingService {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public StreamingResponse<Artist> findFavoriteArtists() throws JsonProcessingException {
-		Map<String, String> queryParameters = new HashMap<String, String>(); 
-		queryParameters.put(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
-		String uri = buildUriString(spotifyApiUrl + spotifyTopArtists, queryParameters);
-		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, getHttpEntity(), String.class);
+	public StreamingResponse<Artist> findFavoriteArtists() {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(spotifyApiUrl + spotifyTopArtists);
+		builder.queryParam(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
+		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, getHttpEntity(), String.class);
 		return parseStreamingResponse(response.getBody(), Artist.class);
 	}
 
@@ -172,14 +181,13 @@ public class SpotifyService implements MusicStreamingService {
 	 * Creates a new playlist in user's spotify account based on user's top tracks and top artists
 	 */
 	@Override
-	public Playlist createPersonalPlaylist(CreatePlaylistRequest request) throws JsonProcessingException {
-		List<Track> tracksForPlaylist = getTracksForPlaylist();
+	public Playlist createPersonalPlaylist(CreatePlaylistRequest request) {
 		User user = findUser();
 		String uri = spotifyApiUrl + spotifyUsers + "/" + user.getId() + spotifyPlaylists;
 		ResponseEntity<Playlist> playlistResponse = restTemplate.exchange(uri, HttpMethod.POST, getHttpEntity(request), Playlist.class);
 		Playlist playlist = playlistResponse.getBody();
 		if (playlistResponse.getStatusCode().equals(HttpStatus.CREATED)) {
-			addTracksInPlaylist(playlist.getId(), tracksForPlaylist);
+			addTracksInPersonalPlaylist(playlist.getId());
 			userPlaylistService.saveUserPlaylist(new UserPlaylist(user.getId(), playlist.getId(), LocalDate.now()));
 		}
 		return playlist;
@@ -193,12 +201,13 @@ public class SpotifyService implements MusicStreamingService {
 		this.token = token;
 	}
 	
-	public void addTracksInPlaylist(String playlistId, List<Track> tracksForPlaylist) {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(spotifyApiUrl + spotifyPlaylists + "/" + playlistId + spotifyTracks);
+	public void addTracksInPersonalPlaylist(String playlistId) {
+		List<Track> tracksForPlaylist = getTracksForPlaylist();
 		List<String> trackUris = new ArrayList<String>();
 		for(Track track : tracksForPlaylist) {
 			trackUris.add(track.getURI());
 		}
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(spotifyApiUrl + spotifyPlaylists + "/" + playlistId + spotifyTracks);
 		builder.queryParam("uris", String.join(",", trackUris));
 		restTemplate.exchange(builder.toUriString(), HttpMethod.POST, getHttpEntity(), String.class);
 	}
@@ -206,7 +215,7 @@ public class SpotifyService implements MusicStreamingService {
 	/**
 	 * @return User
 	 */
-	public User findUser() {
+	private User findUser() {
 		return restTemplate.exchange(spotifyApiUrl + spotifyMe, HttpMethod.GET, getHttpEntity(), User.class).getBody();
 	}
 
@@ -216,7 +225,7 @@ public class SpotifyService implements MusicStreamingService {
 	 * @param id
 	 * @return
 	 */
-	public Artist findArtistById(String id) {
+	private Artist findArtistById(String id) {
 		return restTemplate.exchange(spotifyApiUrl + spotifyArtists + "/" + id, HttpMethod.GET, getHttpEntity(), Artist.class).getBody();
 	}
 
@@ -225,11 +234,10 @@ public class SpotifyService implements MusicStreamingService {
 	 * @return
 	 */
 	private List<Track> findArtistTopTracks(String id) {
-		Map<String, String> queryParameters = new HashMap<String, String>(); 
-		queryParameters.put(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
-		queryParameters.put(COUNTRY, spotifyCountry);
-		String uri = buildUriString(spotifyApiUrl + spotifyArtists + "/" + id + spotifyArtistTopTracks, queryParameters);
-		ResponseEntity<TracksResponse> response = restTemplate.exchange(uri, HttpMethod.GET, getHttpEntity(), TracksResponse.class);		
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(spotifyApiUrl + spotifyArtists + "/" + id + spotifyArtistTopTracks);
+		builder.queryParam(LIMIT, NUMBER_MAX_OF_TRACKS.toString());
+		builder.queryParam(COUNTRY, spotifyCountry);
+		ResponseEntity<TracksResponse> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, getHttpEntity(), TracksResponse.class);		
 		return response.getBody().getTracks();
 	}
 
@@ -240,7 +248,7 @@ public class SpotifyService implements MusicStreamingService {
 	 * @param tracks
 	 * @return
 	 */
-	private List<Track> getTracksForPlaylist() throws JsonProcessingException{
+	private List<Track> getTracksForPlaylist() {
 		List<Track> playlistTracks = new ArrayList<Track>();
 		playlistTracks.addAll(getTracksFromTopArtistsToPlaylist());
 		playlistTracks.addAll(getTracksFromTopTracksToPlaylist());
@@ -253,7 +261,7 @@ public class SpotifyService implements MusicStreamingService {
 	 * @return
 	 * @throws JsonProcessingException
 	 */
-	private List<Track> getTracksFromTopTracksToPlaylist() throws JsonProcessingException {
+	private List<Track> getTracksFromTopTracksToPlaylist() {
 		List<Track> playlistTracks = new ArrayList<Track>();
 		StreamingResponse<Track> favoriteTracks = findFavoriteTracks();
 		for (Track track : favoriteTracks.getItems()) {
@@ -268,7 +276,7 @@ public class SpotifyService implements MusicStreamingService {
 	 * @return
 	 * @throws JsonProcessingException
 	 */
-	private List<Track> getTracksFromTopArtistsToPlaylist() throws JsonProcessingException {
+	private List<Track> getTracksFromTopArtistsToPlaylist() {
 		List<Track> playlistTracks = new ArrayList<Track>();
 		StreamingResponse<Artist> favoriteArtists = findFavoriteArtists();
 		for (Artist artist : favoriteArtists.getItems()) {
@@ -325,7 +333,153 @@ public class SpotifyService implements MusicStreamingService {
 		return nonDuplicatedTracks;
 	}
 	
+	@Override
+	public String findHowBadIsYourMusicalTaste() {
+		Map<String, Integer> genres = getSortedGenresCount();
+		return getMusicalTaste(genres);
+	}
 
+	/**
+	 * Retorna as ocorrencias de cada gênero, dentro dos artistas e faixas favoritas
+	 * do usuário
+	 * 
+	 * @param artists
+	 * @param tracks
+	 * @return
+	 */
+	private Map<String, Integer> getSortedGenresCount() {
+		Map<String, Integer> occurencesByGenre = getOccurencesByGenre();
+		return sortGenresByMostListened(occurencesByGenre);
+	}
+	
+	private String getMusicalTaste(Map<String, Integer> genres) {
+		Double percentBadGenres = getPercentOfBadGenres(genres);
+		return getMusicalTasteByPercentOfBadTastes(percentBadGenres);
+	}
+	
+	private Double getPercentOfBadGenres(Map<String, Integer> genres) {
+		Double percentBadGenres = 0.0; 
+		Integer sumGenresOcurrences = getAllGenresOccurencesSum(genres);
+		Map<String, Integer> userGenresInBlackilist =  getBlacklistGenresByUser(genres);
+		for(Map.Entry<String, Integer> occurencesByGenre : userGenresInBlackilist.entrySet()) {
+			percentBadGenres += occurencesByGenre.getValue().doubleValue() / sumGenresOcurrences.doubleValue() * 100 ; 
+		}
+		return percentBadGenres;
+	}
+	
+	private String getMusicalTasteByPercentOfBadTastes(Double percentBadGenres) {
+		String result = "";
+		if (percentBadGenres.intValue() >= 1 &&  percentBadGenres.intValue() <= 10) {
+			result = "No geral você tem bom gosto músical, mas confesse, você tem uns esqueletos no armário ";
+		} else if (percentBadGenres.intValue() >= 11 &&  percentBadGenres.intValue() <= 25) {
+			result = "No geral seu gosto é bom, mas tem umas coisas aí pra se envergonhar";
+		} else if (percentBadGenres.intValue() >= 26 &&  percentBadGenres.intValue() <= 50) {
+			result = "Você até se esforça, mas tem coisas de gosto bem duvidoso no meio das coisas que ouve ";
+		} else if (percentBadGenres.intValue() >= 51 &&  percentBadGenres.intValue() <= 75) {
+			result = "Você é de uma pobreza musical tremenda. Tem um gosto musical muito ruim.";
+		} else if (percentBadGenres.intValue() > 75) {
+			result = "Seu gosto musical é um chorume total! Deus ajude pra que você nunca seja DJ em uma festa";
+		} else {
+			result = "Parabéns, você é uma pessoa de excelente gosto musical!";
+		}
+		return result;
+	}
+	
+	private Integer getAllGenresOccurencesSum(Map<String, Integer> occurencesByGenre) {
+		Integer sumGenreOcurrences = 0;
+		for (Map.Entry<String, Integer> occurence : occurencesByGenre.entrySet()) {
+			sumGenreOcurrences += occurence.getValue();
+		}
+		return sumGenreOcurrences;
+	}
+	
+	private Map<String, Integer> getBlacklistGenresByUser(Map<String, Integer> genres){
+		Map<String, Integer> userGenresInBlackilist = new HashMap<String,Integer>();
+		Map<String, Integer> blacklistdGenreNotInGenre = new LinkedHashMap<String, Integer>();
+		List<Genre> genresInBlacklist = genreService.findBlacklistedGenres();
+		for (Map.Entry<String, Integer> genre : genres.entrySet()) {
+			if(containsGenre(genresInBlacklist, genre.getKey())) {
+				userGenresInBlackilist.put(genre.getKey(), genre.getValue());
+			} else {
+				blacklistdGenreNotInGenre.put(genre.getKey(), genre.getValue());
+			}
+		}
+		return userGenresInBlackilist;
+	}
+	
+	private Map<String, Integer> getOccurencesByGenre(){
+		Map<String, Integer> occurencesByGenre = new TreeMap<String, Integer>(Collections.reverseOrder());
+		List<String> genres = getGenresFromTopArtistsAndTopTracks();	
+		Set<String> distinctGenres = new HashSet<>(genres);
+		for (String genre : distinctGenres) {
+			occurencesByGenre.put(genre, Collections.frequency(genres, genre));
+		}
+		return occurencesByGenre;
+	}
+	
+	private List<String> getGenresFromTopArtistsAndTopTracks(){
+		List<Artist> artists = new ArrayList<Artist>(); 
+		List<Track> tracks = new ArrayList<Track>(); 
+		List<String> genres = new ArrayList<String>();
+		artists = findFavoriteArtists().getItems(); 
+		tracks = findFavoriteTracks().getItems();
+		genres.addAll(getGenresByTopArtists(artists));
+		genres.addAll(getGenresByTopTracks(tracks));
+		return genres;
+	}
+	
+	private Map<String, Integer> sortGenresByMostListened(Map<String, Integer> occurencesByGenre ){
+		Map<String, Integer> sortedGenresMap = new LinkedHashMap<String, Integer>();
+		occurencesByGenre.entrySet().stream()
+			.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+			.forEach(occurence -> sortedGenresMap.put(occurence.getKey(), occurence.getValue()));
+		return sortedGenresMap;
+	}
+
+	private Boolean containsGenre(List<Genre> genres, String genreName) {
+		for(Genre genre : genres) {
+			if(genre.getGenreName().toLowerCase().equals(genreName.toLowerCase())) {
+				return Boolean.TRUE;
+			}
+		}
+		return Boolean.FALSE;
+	}
+	
+	
+	/**
+	 * Retorna lista com todos os gêneros contidos dos top artistas do usuário
+	 * 
+	 * @param artists
+	 * @return
+	 */
+	public List<String> getGenresByTopArtists(List<Artist> artists) {
+		List<String> genres = new ArrayList<String>();
+		for (Artist artist : artists) {
+			genres.addAll(artist.getGenres());
+		}
+		return genres;
+	}
+
+	/**
+	 * Retorna Lista com todos os gêneros contidos nas top tracks do usuário
+	 * 
+	 * @param tracks
+	 * @return
+	 */
+	public List<String> getGenresByTopTracks(List<Track> tracks) {
+		List<String> genres = new ArrayList<String>();
+		for (Track track : tracks) {
+			List<Artist> artists = track.getArtists();
+			for (Artist artist : artists) {
+				artist = findArtistById(artist.getId());
+				genres.addAll(artist.getGenres());
+			}
+		}
+		return genres;
+	}
+
+	
+	
 	/**
 	 * Creates a HTTP Entity to consume Spotify API
 	 * 
@@ -335,15 +489,11 @@ public class SpotifyService implements MusicStreamingService {
 	private HttpEntity<Object> getHttpEntity(Object body) {
 		// Creates header to set the authentication token
 		HttpHeaders headers = new HttpHeaders();
-
-		// Set parameters MediaType and authentication token
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(AUTHORIZATION, token);
-		
 		if(body != null) {
 			return new HttpEntity<Object>(body, headers);
 		}
-
 		return new HttpEntity<Object>(headers);
 	}
 	
@@ -366,25 +516,18 @@ public class SpotifyService implements MusicStreamingService {
 	 * @return StreamingResponse<T>
 	 * @throws JsonProcessingException
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private <T> StreamingResponse parseStreamingResponse(String json, Class<T> returnType) throws JsonProcessingException {
+	@SuppressWarnings({ "rawtypes"})
+	private <T> StreamingResponse parseStreamingResponse(String json, Class<T> returnType) {
 		ObjectMapper mapper = new ObjectMapper();
 		JavaType type = mapper.getTypeFactory().constructParametricType(StreamingResponse.class, returnType);
 		mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-		return (StreamingResponse<T>) mapper.readValue(json, type);
-	}
-	
-	/**
-	 * @param uri
-	 * @param params
-	 * @return
-	 */
-	private String buildUriString(String uri, Map<String, String> params) {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri);
-		for(Map.Entry<String, String> param : params.entrySet()) {
-			builder.queryParam(param.getKey(), param.getValue());
+		StreamingResponse<T> streamingResponse;
+		try {
+			streamingResponse = mapper.readValue(json, type);
+		} catch (JsonProcessingException e) {
+			logger.error("Erro ao processar Json de retorno");
+			streamingResponse = new StreamingResponse<T>();
 		}
-		return builder.toUriString();
+		return streamingResponse;
 	}
-
 }

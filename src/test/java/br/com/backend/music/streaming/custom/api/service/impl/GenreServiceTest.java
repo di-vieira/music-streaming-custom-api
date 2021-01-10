@@ -52,7 +52,7 @@ public class GenreServiceTest {
 	public void findBlacklistedGenresTest() {
 		List<Genre> mockedGenres = new ArrayList<Genre>();
 		mockedGenres.add(new Genre());
-		Mockito.when(genreRepository.findByInBlacklist("N")).thenReturn(mockedGenres);
+		Mockito.when(genreRepository.findByInBlacklist("S")).thenReturn(mockedGenres);
 		List<Genre> genres = genreService.findBlacklistedGenres();
 		assertNotNull(genres);
 		assertEquals(1, genres.size());

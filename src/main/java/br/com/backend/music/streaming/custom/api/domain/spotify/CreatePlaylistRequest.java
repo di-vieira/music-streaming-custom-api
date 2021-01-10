@@ -1,4 +1,4 @@
-package br.com.backend.music.streaming.custom.api.domain.request;
+package br.com.backend.music.streaming.custom.api.domain.spotify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

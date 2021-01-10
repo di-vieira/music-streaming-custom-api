@@ -5,8 +5,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
-
 /**
  * Classe que representa uma playlist
  * 

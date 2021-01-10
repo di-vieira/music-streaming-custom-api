@@ -1,4 +1,4 @@
-package br.com.backend.music.streaming.custom.api.domain.response;
+package br.com.backend.music.streaming.custom.api.domain.spotify;
 
 import java.util.ArrayList;
 import java.util.List;
