@@ -69,6 +69,12 @@ public class Playlist {
 	private User owner;
 	
 	/**
+	 * Playlist's color
+	 */
+	@JsonProperty("primary_color")
+	private String primaryColor;
+	
+	/**
 	 * Flag que indica se a playlist é publica ou privada
 	 */
 	@JsonProperty("public")
@@ -222,6 +228,20 @@ public class Playlist {
 	 */
 	public void setOwner(User owner) {
 		this.owner = owner;
+	}
+
+	/**
+	 * @return the primaryColor
+	 */
+	public String getPrimaryColor() {
+		return primaryColor;
+	}
+
+	/**
+	 * @param primaryColor the primaryColor to set
+	 */
+	public void setPrimaryColor(String primaryColor) {
+		this.primaryColor = primaryColor;
 	}
 
 	/**
