@@ -3,6 +3,7 @@ package br.com.backend.music.streaming.custom.api.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -14,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import br.com.backend.music.streaming.custom.api.domain.spotify.Artist;
-import br.com.backend.music.streaming.custom.api.domain.spotify.CreatePlaylistRequest;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
 import br.com.backend.music.streaming.custom.api.domain.spotify.StreamingResponse;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
@@ -71,9 +71,8 @@ public class MusicStreamingControllerTest {
 	@Test
 	public void createPersonalPlaylistTest() {
 		try {
-			CreatePlaylistRequest request = new CreatePlaylistRequest();
-			when(musicStreamingService.createPersonalPlaylist(request)).thenReturn(new Playlist());
-			ResponseEntity<Playlist> response = musicStreamingController.createPersonalPlaylist(null, request);
+			when(musicStreamingService.createPersonalPlaylist(anyString())).thenReturn(new Playlist());
+			ResponseEntity<Playlist> response = musicStreamingController.createPersonalPlaylist(null, "");
 			assertNotNull(response);
 		} catch (Exception e) {
 			fail("Erro na execução do teste ");
@@ -126,10 +125,9 @@ public class MusicStreamingControllerTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void createPersonalPlaylistExceptionTest() {
-		CreatePlaylistRequest request = new CreatePlaylistRequest();
 		ResponseEntity<Playlist> response;
-		when(musicStreamingService.createPersonalPlaylist(request)).thenThrow(Exception.class);
-		response = musicStreamingController.createPersonalPlaylist(null, request);
+		when(musicStreamingService.createPersonalPlaylist(anyString())).thenThrow(Exception.class);
+		response = musicStreamingController.createPersonalPlaylist(null, "");
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
 

@@ -34,6 +34,19 @@ public class CreatePlaylistRequest {
 	@JsonProperty("description")
 	private String description;
 
+	public CreatePlaylistRequest(String name, Boolean isPublic, Boolean collaborative,
+			String description) {
+		super();
+		this.name = name;
+		this.isPublic = isPublic;
+		this.collaborative = collaborative;
+		this.description = description;
+	}
+	
+	public CreatePlaylistRequest() {
+
+	}
+	
 	/**
 	 * @return the name
 	 */

@@ -7,14 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.backend.music.streaming.custom.api.domain.spotify.Artist;
-import br.com.backend.music.streaming.custom.api.domain.spotify.CreatePlaylistRequest;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
 import br.com.backend.music.streaming.custom.api.domain.spotify.StreamingResponse;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
@@ -39,11 +38,6 @@ public class MusicStreamingController {
 
 	Logger logger = LoggerFactory.getLogger(MusicStreamingController.class);
 
-	/**
-	 * @param token
-	 * @return ResponseEntity<StreamingResponse<Track>> Objeto com a lista de faixas
-	 *         favoritas do usuário
-	 */
 	@GetMapping("/favorite-tracks")
 	@ApiOperation(value = "retorna objeto com lista de músicas favoritas do usuário")
 	@ResponseBody
@@ -59,10 +53,6 @@ public class MusicStreamingController {
 		}
 	}
 
-	/**
-	 * @param token
-	 * @returnResponseEntity<SpotifyResponse<Artist>>
-	 */
 	@GetMapping("/favorite-artists")
 	@ApiOperation(value = "retorna objeto com lista de artistas favoritos do usuário")
 	@ResponseBody
@@ -83,10 +73,10 @@ public class MusicStreamingController {
 	@ApiOperation(value = "Cria playlist com base nos artistas e músicas favoritas do usuário")
 	public ResponseEntity<Playlist> createPersonalPlaylist(
 			@RequestHeader(value = "authorization", required = false) @ApiParam("Parâmetro de Token de autenticação. Não é necessário informar, pois o mesmo é extraído do Header da solicitação") String token,
-			@RequestBody CreatePlaylistRequest request) {
+			@RequestParam("Nome da Playlist que será criada") String playlistName) {
 		try {
 			musicStreamingService.setToken(token);
-			Playlist playlist = musicStreamingService.createPersonalPlaylist(request);
+			Playlist playlist = musicStreamingService.createPersonalPlaylist(playlistName);
 			return new ResponseEntity<>(playlist, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Erro ao executar criação de playlist personalizada");
