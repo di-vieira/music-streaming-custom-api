@@ -149,6 +149,11 @@ public class SpotifyService implements MusicStreamingService {
 	 */
 	private final String COUNTRY = "country";
 	
+	/**
+	 * Description of created playlist
+	 */
+	private final String PLAYLIST_DESCRIPTION = "Playlist Criada por API";
+	
 	private String token;
 
 	/**
@@ -179,7 +184,8 @@ public class SpotifyService implements MusicStreamingService {
 	 * Creates a new playlist in user's spotify account based on user's top tracks and top artists
 	 */
 	@Override
-	public Playlist createPersonalPlaylist(CreatePlaylistRequest request) {
+	public Playlist createPersonalPlaylist(String playlistName) {
+		CreatePlaylistRequest request = new CreatePlaylistRequest(playlistName, false, false, PLAYLIST_DESCRIPTION);
 		User user = findUser();
 		String uri = spotifyApiUrl + spotifyUsers + "/" + user.getId() + spotifyPlaylists;
 		ResponseEntity<Playlist> playlistResponse = restTemplate.exchange(uri, HttpMethod.POST, getHttpEntity(request), Playlist.class);

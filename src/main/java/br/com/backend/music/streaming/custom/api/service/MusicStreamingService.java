@@ -1,7 +1,6 @@
 package br.com.backend.music.streaming.custom.api.service;
 
 import br.com.backend.music.streaming.custom.api.domain.spotify.Artist;
-import br.com.backend.music.streaming.custom.api.domain.spotify.CreatePlaylistRequest;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
 import br.com.backend.music.streaming.custom.api.domain.spotify.StreamingResponse;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
@@ -22,10 +21,10 @@ public interface MusicStreamingService {
 	
 	/**
 	 * Creates new playlist based on user's favorite artists and tracks
-	 * @param request Object request to create playlist
+	 * @param playlistName Name of created playlist
 	 * @return Playlist Playlist created
 	 */
-	public Playlist createPersonalPlaylist(CreatePlaylistRequest request);
+	public Playlist createPersonalPlaylist(String playlistName);
 	
 	/**
 	 * Search the genres of artists listened by the user and returns how bad is 

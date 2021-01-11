@@ -277,7 +277,7 @@ public class SpotifyServiceTest {
 			
 			doNothing().when(userPlaylistService).saveUserPlaylist(any(UserPlaylist.class));
 			
-			Playlist response = musicStreamingService.createPersonalPlaylist(request);
+			Playlist response = musicStreamingService.createPersonalPlaylist("");
 			
 			assertNotNull(response);
 		} catch (JsonProcessingException e) {

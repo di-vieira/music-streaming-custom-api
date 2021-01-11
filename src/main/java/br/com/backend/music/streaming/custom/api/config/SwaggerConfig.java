@@ -90,7 +90,7 @@ public class SwaggerConfig {
 	    return new ApiInfo(
 	      "API Customizada com funções adicionais para serviços de streaming", 
 	      "API com funções adicionais para o Spotify", 
-	      "Versão 0.0.1", 
+	      "Versão 1.0.0", 
 	      "Terms of service", 
 	      new Contact("Diego da Silva Vieira", "https://www.linkedin.com/in/diego-silva-vieira/", "diegodasilvavieira@gmail.com"), 
 	      "License of API", "API license URL", Collections.emptyList());
