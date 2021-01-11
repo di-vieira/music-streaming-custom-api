@@ -86,6 +86,8 @@ Os endpoints dentro de <b>music-streaming-controller</b> necessitam de autentica
 <img src="https://github.com/di-vieira/my-images/blob/master/create_playlist.png"/>
 
 
+Obrigado! :)
+
 
 ## Histórico de Release
 
