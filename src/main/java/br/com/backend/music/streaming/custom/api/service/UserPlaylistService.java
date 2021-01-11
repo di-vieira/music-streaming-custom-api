@@ -10,7 +10,7 @@ public interface UserPlaylistService {
 	 * Returns a list containing all personal playlists and their respective users
 	 * @return the user playlists 
 	 */
-	public List<UserPlaylist> listAllUserPlaylists();
+	public List<UserPlaylist> findAllUserPlaylists();
 	
 	/**
 	 * Find user's personal playlist

@@ -1,5 +1,7 @@
 package br.com.backend.music.streaming.custom.api.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import br.com.backend.music.streaming.custom.api.domain.request.CreatePlaylistRequest;
-import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Artist;
+import br.com.backend.music.streaming.custom.api.domain.spotify.CreatePlaylistRequest;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Playlist;
+import br.com.backend.music.streaming.custom.api.domain.spotify.StreamingResponse;
 import br.com.backend.music.streaming.custom.api.domain.spotify.Track;
 import br.com.backend.music.streaming.custom.api.service.MusicStreamingService;
 import io.swagger.annotations.ApiOperation;
@@ -37,6 +37,8 @@ public class MusicStreamingController {
 	@Autowired
 	MusicStreamingService musicStreamingService;
 
+	Logger logger = LoggerFactory.getLogger(MusicStreamingController.class);
+
 	/**
 	 * @param token
 	 * @return ResponseEntity<StreamingResponse<Track>> Objeto com a lista de faixas
@@ -51,8 +53,8 @@ public class MusicStreamingController {
 			musicStreamingService.setToken(token);
 			StreamingResponse<Track> response = musicStreamingService.findFavoriteTracks();
 			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (JsonProcessingException e) {
-			System.out.println("Erro ao processar JSON de retorno da API Spotify");
+		} catch (Exception e) {
+			logger.error("Erro ao executar criação de playlist personalizada");
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -70,15 +72,15 @@ public class MusicStreamingController {
 			musicStreamingService.setToken(token);
 			StreamingResponse<Artist> response = musicStreamingService.findFavoriteArtists();
 			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (JsonProcessingException e) {
-			System.out.println("Erro ao processar JSON de retorno da API Spotify");
+		} catch (Exception e) {
+			logger.error("Erro ao executar criação de playlist personalizada");
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+
 	}
 
 	@PostMapping("/create-personal-playlist")
 	@ApiOperation(value = "Cria playlist com base nos artistas e músicas favoritas do usuário")
-	
 	public ResponseEntity<Playlist> createPersonalPlaylist(
 			@RequestHeader(value = "authorization", required = false) @ApiParam("Parâmetro de Token de autenticação. Não é necessário informar, pois o mesmo é extraído do Header da solicitação") String token,
 			@RequestBody CreatePlaylistRequest request) {
@@ -87,6 +89,21 @@ public class MusicStreamingController {
 			Playlist playlist = musicStreamingService.createPersonalPlaylist(request);
 			return new ResponseEntity<>(playlist, HttpStatus.OK);
 		} catch (Exception e) {
+			logger.error("Erro ao executar criação de playlist personalizada");
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/musical-taste")
+	@ApiOperation(value = "Analisa os gêneros que o usuário ouve e diz o quão ruim é o seu gosto musical")
+	public ResponseEntity<String> findHowBadIsYourMusicalTaste(
+			@RequestHeader(value = "authorization", required = false) @ApiParam("Parâmetro de Token de autenticação. Não é necessário informar, pois o mesmo é extraído do Header da solicitação") String token) {
+		try {
+			musicStreamingService.setToken(token);
+			String playlist = musicStreamingService.findHowBadIsYourMusicalTaste();
+			return new ResponseEntity<>(playlist, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Erro ao executar criação de playlist personalizada");
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

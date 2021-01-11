@@ -5,8 +5,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import br.com.backend.music.streaming.custom.api.domain.response.StreamingResponse;
-
 /**
  * Classe que representa uma playlist
  * 
@@ -69,6 +67,12 @@ public class Playlist {
 	 */
 	@JsonProperty("owner")
 	private User owner;
+	
+	/**
+	 * Playlist's color
+	 */
+	@JsonProperty("primary_color")
+	private String primaryColor;
 	
 	/**
 	 * Flag que indica se a playlist é publica ou privada
@@ -224,6 +228,20 @@ public class Playlist {
 	 */
 	public void setOwner(User owner) {
 		this.owner = owner;
+	}
+
+	/**
+	 * @return the primaryColor
+	 */
+	public String getPrimaryColor() {
+		return primaryColor;
+	}
+
+	/**
+	 * @param primaryColor the primaryColor to set
+	 */
+	public void setPrimaryColor(String primaryColor) {
+		this.primaryColor = primaryColor;
 	}
 
 	/**

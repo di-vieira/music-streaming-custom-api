@@ -10,13 +10,13 @@ public interface GenreService {
 	 * Returns a list containing all genres
 	 * @return the genres 
 	 */
-	public List<Genre> listAllGenres();
+	public List<Genre> findAllGenres();
 	
 	/**
 	 * Returns a list containing only the blacklisted genres
 	 * @return the genres
 	 */
-	public List<Genre> listBlacklistedGenres(String inBlacklist);
+	public List<Genre> findBlacklistedGenres();
 	
 	/**
 	 * Find a genre by its id
@@ -35,7 +35,7 @@ public interface GenreService {
 	 * Update an existing genre
 	 * @param genre
 	 */
-	public void updateGenre(Genre genre);
+	public void updateGenre(Integer id, Genre genre);
 	
 	/**
 	 * remove a genre from entity

@@ -39,6 +39,17 @@ public class UserPlaylist {
 	@ApiParam("Data de Inclusão da Playlist")
 	@Column(name="DT_INCL_PLAYLIST")
 	private LocalDate includeDate;
+	
+	public UserPlaylist() {
+		
+	}
+
+	public UserPlaylist(String userId, String playlistId, LocalDate includeDate) {
+		super();
+		this.userId = userId;
+		this.playlistId = playlistId;
+		this.includeDate = includeDate;
+	}
 
 	/**
 	 * @return the userId

@@ -1,0 +1,39 @@
+{
+    "collaborative": false,
+    "description": "Teste da API2",
+    "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/4GxWZfqxmMft2Bd1Nl0K0u"
+    },
+    "followers": {
+        "href": null,
+        "total": 0
+    },
+    "href": "https://api.spotify.com/v1/playlists/4GxWZfqxmMft2Bd1Nl0K0u",
+    "id": "4GxWZfqxmMft2Bd1Nl0K0u",
+    "images": [],
+    "name": "A Lista da API2",
+    "owner": {
+        "display_name": "Diego Vieira",
+        "external_urls": {
+            "spotify": "https://open.spotify.com/user/12150045193"
+        },
+        "href": "https://api.spotify.com/v1/users/12150045193",
+        "id": "12150045193",
+        "type": "user",
+        "uri": "spotify:user:12150045193"
+    },
+    "primary_color": null,
+    "public": false,
+    "snapshot_id": "Myw5OTZhMDhhYzAyZTkyYmRhMjRjOWQ5Y2M4OWU5NDI5YjQwZTg2NTIy",
+    "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/4GxWZfqxmMft2Bd1Nl0K0u/tracks?offset=0&limit=100",
+        "items": [],
+        "limit": 100,
+        "next": null,
+        "offset": 0,
+        "previous": null,
+        "total": 0
+    },
+    "type": "playlist",
+    "uri": "spotify:playlist:4GxWZfqxmMft2Bd1Nl0K0u"
+}

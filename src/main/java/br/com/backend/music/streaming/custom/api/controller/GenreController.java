@@ -29,7 +29,7 @@ public class GenreController {
 	@ApiOperation("Busca todos os Gêneros cadastrados")
 	@ResponseBody
 	public List<Genre> findAllGenres() {
-		return genreService.listAllGenres();
+		return genreService.findAllGenres();
 	}
 
 	@GetMapping("/genres/{id}")
@@ -42,8 +42,8 @@ public class GenreController {
 	@GetMapping("/genres/blacklist")
 	@ApiOperation("Busca a lista de gêneros de gosto duvidoso...")
 	@ResponseBody
-	public List<Genre> listBlacklistedGenres() {
-		return genreService.listBlacklistedGenres("S");
+	public List<Genre> findBlacklistedGenres() {
+		return genreService.findBlacklistedGenres();
 	}
 
 	@PostMapping("/genres")
@@ -57,17 +57,13 @@ public class GenreController {
 	@ApiOperation("Atualiza um gênero previamente cadastrado")
 	@ResponseBody
 	public void updateGenre(@PathVariable @ApiParam("ID do gênero que será atualizado") Integer id, @RequestBody Genre genre) {
-		Genre gen = genreService.findGenreById(id);
-		if(gen != null) {
-			gen.setInBlacklist(genre.getInBlacklist());
-			genreService.saveGenre(gen);
-		}
+		genreService.updateGenre(id, genre);
 	}
 
 	@DeleteMapping("/genres/{id}")
 	@ApiOperation("Deleta um gênero cadastrado")
 	@ResponseBody
-	public void DeleteGenre(@PathVariable @ApiParam("ID do gênero que será excluído") Integer id) {
+	public void deleteGenre(@PathVariable @ApiParam("ID do gênero que será excluído") Integer id) {
 		genreService.deleteGenreById(id);
 	}
 
