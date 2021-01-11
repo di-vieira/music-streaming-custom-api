@@ -199,6 +199,10 @@ public class SpotifyService implements MusicStreamingService {
 		this.token = token;
 	}
 	
+	/**
+	 * Add some of user's favorite tracks in personal playlist
+	 * @param playlistId Playlist ID
+	 */
 	public void addTracksInPersonalPlaylist(String playlistId) {
 		List<Track> tracksForPlaylist = getTracksForPlaylist();
 		List<String> trackUris = new ArrayList<String>();
@@ -211,7 +215,8 @@ public class SpotifyService implements MusicStreamingService {
 	}
 
 	/**
-	 * @return User
+	 * Returns basic data from logged user
+	 * @return User object
 	 */
 	private User findUser() {
 		return restTemplate.exchange(spotifyApiUrl + spotifyMe, HttpMethod.GET, getHttpEntity(), User.class).getBody();
@@ -219,17 +224,17 @@ public class SpotifyService implements MusicStreamingService {
 
 	/**
 	 * Find artist by ID
-	 * 
-	 * @param id
-	 * @return
+	 * @param id Artist ID
+	 * @return Artist object
 	 */
 	private Artist findArtistById(String id) {
 		return restTemplate.exchange(spotifyApiUrl + spotifyArtists + "/" + id, HttpMethod.GET, getHttpEntity(), Artist.class).getBody();
 	}
 
 	/**
-	 * @param id
-	 * @return
+	 * Find top tracks by artist
+	 * @param id Artist ID
+	 * @return List<Track> list of top artist's top tracks
 	 */
 	private List<Track> findArtistTopTracks(String id) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(spotifyApiUrl + spotifyArtists + "/" + id + spotifyArtistTopTracks);
@@ -241,10 +246,7 @@ public class SpotifyService implements MusicStreamingService {
 
 	/**
 	 * Get tracks to add in personal playlist
-	 * 
-	 * @param artists
-	 * @param tracks
-	 * @return
+	 * @return List<Track> list of tracks to add in playlist
 	 */
 	private List<Track> getTracksForPlaylist() {
 		List<Track> playlistTracks = new ArrayList<Track>();
@@ -255,9 +257,8 @@ public class SpotifyService implements MusicStreamingService {
 	
 	
 	/**
-	 * Get the 
-	 * @return
-	 * @throws JsonProcessingException
+	 * Get the top tracks from user's favorite tracks list to add in personal playlist
+	 * @return List<Track> list of tracks
 	 */
 	private List<Track> getTracksFromTopTracksToPlaylist() {
 		List<Track> playlistTracks = new ArrayList<Track>();
@@ -271,8 +272,8 @@ public class SpotifyService implements MusicStreamingService {
 	}
 	
 	/**
-	 * @return
-	 * @throws JsonProcessingException
+	 * Get the top tracks from user's favorite artists list to add in personal playlist
+	 * @return List<Track> list of tracks
 	 */
 	private List<Track> getTracksFromTopArtistsToPlaylist() {
 		List<Track> playlistTracks = new ArrayList<Track>();
@@ -287,10 +288,9 @@ public class SpotifyService implements MusicStreamingService {
 	/**
 	 * Verifies if Set of tracks contains at least one track from an especific
 	 * artist
-	 * 
-	 * @param playlistTracks
-	 * @param artist
-	 * @return
+	 * @param playlistTracks List of tracks
+	 * @param artist artist to verify if there's some track in list
+	 * @return Boolean
 	 */
 	private Boolean containsArtist(List<Track> playlistTracks, Artist artist) {
 		for (Track track : playlistTracks) {
@@ -305,10 +305,9 @@ public class SpotifyService implements MusicStreamingService {
 
 	/**
 	 * Verifies if Set of tracks contains at least one occurrence of track
-	 * 
-	 * @param playlistTracks
-	 * @param trackToAdd
-	 * @return
+	 * @param playlistTracks List of tracks
+	 * @param trackToAdd track to verify if there's some occurrence of it in list
+	 * @return Boolean
 	 */
 	private Boolean containsTrack(List<Track> playlistTracks, Track trackToAdd) {
 		for (Track track : playlistTracks) {
@@ -321,6 +320,11 @@ public class SpotifyService implements MusicStreamingService {
 		return Boolean.FALSE;
 	}
 	
+	/**
+	 * Remove occurrences of duplicated tracks in a track list
+	 * @param tracks list of tracks to remove duplicates
+	 * @return List<Track> Track list without duplicates
+	 */
 	private List<Track> removeDuplicatedTracks(List<Track> tracks){
 		List<Track> nonDuplicatedTracks = new ArrayList<Track>();
 		for(Track track : tracks) {
@@ -331,51 +335,66 @@ public class SpotifyService implements MusicStreamingService {
 		return nonDuplicatedTracks;
 	}
 	
+	/**
+	 * Returns a string with user's musical taste analysis
+	 */
 	@Override
 	public String findHowBadIsYourMusicalTaste() {
 		Map<String, Integer> genres = getSortedGenresCount();
 		return getMusicalTaste(genres);
 	}
 
+
 	/**
-	 * Retorna as ocorrencias de cada gênero, dentro dos artistas e faixas favoritas
-	 * do usuário
-	 * 
-	 * @param artists
-	 * @param tracks
-	 * @return
+	 * Sort map with all genres occurences ordered by value descending 
+	 * @return Map<String, Integer> genres map
 	 */
 	private Map<String, Integer> getSortedGenresCount() {
 		Map<String, Integer> occurencesByGenre = getOccurencesByGenre();
 		return sortGenresByMostListened(occurencesByGenre);
 	}
 	
+	/**
+	 * Get the musical taste analysis of user
+	 * @param genres map containing most listened genres by user
+	 * @return String returns a string with user's musical taste analysis
+	 */
 	private String getMusicalTaste(Map<String, Integer> genres) {
-		Double percentBadGenres = getPercentOfBadGenres(genres);
-		return getMusicalTasteByPercentOfBadTastes(percentBadGenres);
+		Double percentBlacklistedGenres = getPercentOfBlacklistedGenres(genres);
+		return getMusicalTasteByPercentOfBlacklistedTastes(percentBlacklistedGenres);
 	}
 	
-	private Double getPercentOfBadGenres(Map<String, Integer> genres) {
-		Double percentBadGenres = 0.0; 
+	/**
+	 * Find the percent value of blacklisted genres in user's favorites tracks and artists
+	 * @param genres map containing most listened genres by user
+	 * @return Double percentBlacklistedGenres percent value of blacklisted genres in user's most listened genres
+	 */
+	private Double getPercentOfBlacklistedGenres(Map<String, Integer> genres) {
+		Double percentBlacklistedGenres = 0.0; 
 		Integer sumGenresOcurrences = getAllGenresOccurencesSum(genres);
 		Map<String, Integer> userGenresInBlackilist =  getBlacklistGenresByUser(genres);
 		for(Map.Entry<String, Integer> occurencesByGenre : userGenresInBlackilist.entrySet()) {
-			percentBadGenres += occurencesByGenre.getValue().doubleValue() / sumGenresOcurrences.doubleValue() * 100 ; 
+			percentBlacklistedGenres += occurencesByGenre.getValue().doubleValue() / sumGenresOcurrences.doubleValue() * 100 ; 
 		}
-		return percentBadGenres;
+		return percentBlacklistedGenres;
 	}
 	
-	private String getMusicalTasteByPercentOfBadTastes(Double percentBadGenres) {
+	/**
+	 * Get user's musical taste analysis based in a blacklisted genres percent value 
+	 * @param percentBlacklistedGenres percent value of blacklisted genres in user's most listened genres
+	 * @return String description of user's musical taste analysis
+	 */
+	private String getMusicalTasteByPercentOfBlacklistedTastes(Double percentBlacklistedGenres) {
 		String result = "";
-		if (percentBadGenres.intValue() >= 1 &&  percentBadGenres.intValue() <= 10) {
+		if (percentBlacklistedGenres.intValue() >= 1 &&  percentBlacklistedGenres.intValue() <= 5) {
 			result = "No geral você tem bom gosto músical, mas confesse, você tem uns esqueletos no armário ";
-		} else if (percentBadGenres.intValue() >= 11 &&  percentBadGenres.intValue() <= 25) {
+		} else if (percentBlacklistedGenres.intValue() >= 6 &&  percentBlacklistedGenres.intValue() <= 15) {
 			result = "No geral seu gosto é bom, mas tem umas coisas aí pra se envergonhar";
-		} else if (percentBadGenres.intValue() >= 26 &&  percentBadGenres.intValue() <= 50) {
+		} else if (percentBlacklistedGenres.intValue() >= 16 &&  percentBlacklistedGenres.intValue() <= 35) {
 			result = "Você até se esforça, mas tem coisas de gosto bem duvidoso no meio das coisas que ouve ";
-		} else if (percentBadGenres.intValue() >= 51 &&  percentBadGenres.intValue() <= 75) {
+		} else if (percentBlacklistedGenres.intValue() >= 36 &&  percentBlacklistedGenres.intValue() <= 60) {
 			result = "Você é de uma pobreza musical tremenda. Tem um gosto musical muito ruim.";
-		} else if (percentBadGenres.intValue() > 75) {
+		} else if (percentBlacklistedGenres.intValue() > 60) {
 			result = "Seu gosto musical é um chorume total! Deus ajude pra que você nunca seja DJ em uma festa";
 		} else {
 			result = "Parabéns, você é uma pessoa de excelente gosto musical!";
@@ -383,6 +402,11 @@ public class SpotifyService implements MusicStreamingService {
 		return result;
 	}
 	
+	/**
+	 * Get the sum of all genre occurences 
+	 * @param occurencesByGenre Map of genres occurrences
+	 * @return Integer Sum of all genre occurrences
+	 */
 	private Integer getAllGenresOccurencesSum(Map<String, Integer> occurencesByGenre) {
 		Integer sumGenreOcurrences = 0;
 		for (Map.Entry<String, Integer> occurence : occurencesByGenre.entrySet()) {
@@ -391,6 +415,11 @@ public class SpotifyService implements MusicStreamingService {
 		return sumGenreOcurrences;
 	}
 	
+	/**
+	 * Gets a list of all user's genres which are in genres blacklist
+	 * @param genres list of genres to verify if some of them is in blacklist
+	 * @return Map<String, Integer> a map with all user's blacklisted genres
+	 */
 	private Map<String, Integer> getBlacklistGenresByUser(Map<String, Integer> genres){
 		Map<String, Integer> userGenresInBlackilist = new HashMap<String,Integer>();
 		Map<String, Integer> blacklistdGenreNotInGenre = new LinkedHashMap<String, Integer>();
@@ -405,6 +434,10 @@ public class SpotifyService implements MusicStreamingService {
 		return userGenresInBlackilist;
 	}
 	
+	/**
+	 * Gets a map containing user's most listened genres occurrences
+	 * @return Map<String, Integer> Occurrences by genre map 
+	 */
 	private Map<String, Integer> getOccurencesByGenre(){
 		Map<String, Integer> occurencesByGenre = new TreeMap<String, Integer>(Collections.reverseOrder());
 		List<String> genres = getGenresFromTopArtistsAndTopTracks();	
@@ -415,6 +448,10 @@ public class SpotifyService implements MusicStreamingService {
 		return occurencesByGenre;
 	}
 	
+	/**
+	 * Gets a list of genres from top artists and top tracks
+	 * @return List<String> List of genres from top artists and top tracks
+	 */
 	private List<String> getGenresFromTopArtistsAndTopTracks(){
 		List<Artist> artists = new ArrayList<Artist>(); 
 		List<Track> tracks = new ArrayList<Track>(); 
@@ -426,6 +463,11 @@ public class SpotifyService implements MusicStreamingService {
 		return genres;
 	}
 	
+	/**
+	 * Returns a sorted genres map
+	 * @param occurencesByGenre Map of genres occurrences to be sorted
+	 * @return Map<String, Integer> 
+	 */
 	private Map<String, Integer> sortGenresByMostListened(Map<String, Integer> occurencesByGenre ){
 		Map<String, Integer> sortedGenresMap = new LinkedHashMap<String, Integer>();
 		occurencesByGenre.entrySet().stream()
@@ -434,6 +476,12 @@ public class SpotifyService implements MusicStreamingService {
 		return sortedGenresMap;
 	}
 
+	/**
+	 * Verifies if a genre are in a genres list
+	 * @param genres list of genres to be verified
+	 * @param genreName name of genre to be verified
+	 * @return Boolean
+	 */
 	private Boolean containsGenre(List<Genre> genres, String genreName) {
 		for(Genre genre : genres) {
 			if(genre.getGenreName().toLowerCase().equals(genreName.toLowerCase())) {
@@ -445,10 +493,9 @@ public class SpotifyService implements MusicStreamingService {
 	
 	
 	/**
-	 * Retorna lista com todos os gêneros contidos dos top artistas do usuário
-	 * 
+	 * Returns list with artist's top tracks genres
 	 * @param artists
-	 * @return
+	 * @return list of artist's top tracks genres
 	 */
 	public List<String> getGenresByTopArtists(List<Artist> artists) {
 		List<String> genres = new ArrayList<String>();
@@ -459,10 +506,9 @@ public class SpotifyService implements MusicStreamingService {
 	}
 
 	/**
-	 * Retorna Lista com todos os gêneros contidos nas top tracks do usuário
-	 * 
-	 * @param tracks
-	 * @return
+	 * Returns list with top tracks genres
+	 * @param tracks list of tracks to 
+	 * @return list of top tracks genres
 	 */
 	public List<String> getGenresByTopTracks(List<Track> tracks) {
 		List<String> genres = new ArrayList<String>();
@@ -475,8 +521,6 @@ public class SpotifyService implements MusicStreamingService {
 		}
 		return genres;
 	}
-
-	
 	
 	/**
 	 * Creates a HTTP Entity to consume Spotify API
@@ -512,7 +556,6 @@ public class SpotifyService implements MusicStreamingService {
 	 * @param json       JSON string that will be converted into a StreamingResponse
 	 * @param returnType StreamingResponse's content type
 	 * @return StreamingResponse<T>
-	 * @throws JsonProcessingException
 	 */
 	@SuppressWarnings({ "rawtypes"})
 	private <T> StreamingResponse parseStreamingResponse(String json, Class<T> returnType) {
