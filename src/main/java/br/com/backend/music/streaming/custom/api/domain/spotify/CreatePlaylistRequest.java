@@ -3,7 +3,7 @@ package br.com.backend.music.streaming.custom.api.domain.spotify;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar o request body da criação de playlist
+ * Class to represents request body to playlist creation
  * 
  * @author diegovieira
  *
@@ -11,25 +11,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CreatePlaylistRequest {
 
 	/**
-	 * Nome da Playlist criada
+	 * Name of playlist to be created
 	 */
 	@JsonProperty("name")
 	private String name;
 
 	/**
-	 * Flag que indica se a playlist é pública
+	 * Flag that indicates if is public playlist
 	 */
 	@JsonProperty("public")
 	private Boolean isPublic;
 
 	/**
-	 * Flag que indica se a playlist é colaborativa
+	 * Flag that indicates if is a collaborative playlist
 	 */
 	@JsonProperty("collaborative")
 	private Boolean collaborative;
 
 	/**
-	 * Descrição da playlist
+	 * Playlist description
 	 */
 	@JsonProperty("description")
 	private String description;

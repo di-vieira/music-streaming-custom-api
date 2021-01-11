@@ -29,14 +29,14 @@ public class Genre {
 	private Integer genreId;
 
 	/**
-	 * 
+	 * Genre name
 	 */
 	@ApiParam("Nome do Gênero")
 	@Column(name = "NM_GENRE")
 	private String genreName;
 
 	/**
-	 * Flag that indicate if that genre is a bad taste genre ;)
+	 * Flag that indicate if that genre is a bad taste genre to be in a blacklist;)
 	 */
 	@ApiParam("Flag que indica se o gênero está na blacklist (Valores possíveis: S ou N)")
 	@Column(name = "IN_BLACKLIST")

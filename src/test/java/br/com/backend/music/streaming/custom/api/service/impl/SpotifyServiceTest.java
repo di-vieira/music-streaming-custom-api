@@ -70,9 +70,6 @@ public class SpotifyServiceTest {
 	private String jsonMockTracksResponse;
 	private String jsonMockArtist;
 	
-	/**
-	 * Inicializa os Mocks
-	 */
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
@@ -109,10 +106,6 @@ public class SpotifyServiceTest {
 	
 	final Integer NUMBER_MAX_OF_TRACKS = 30;
 	
-	/**
-	 * Teste para o método que consulta a API do Spotify e retorna as faixas
-	 * favoritas do usuário O teste é feito retornando um Mock de um JSON Válido
-	 */
 	@Test
 	public void findFavoriteTracks() {
 		
@@ -180,23 +173,6 @@ public class SpotifyServiceTest {
 			fail("Erro na execução do teste");
 		}
 	}
-
-	/**
-	 * Teste do Fluxo de Exceção de parse do JSON na busca de top-tracks. Utiliza um
-	 * JSON vazio
-	 */
-//	@Test
-//	public void findFavoriteTracksJsonProcessingExceptionTest() {
-//		StreamingResponse<Track> response = new StreamingResponse<Track>();
-//		try {
-//			when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
-//					.thenReturn(new ResponseEntity<String>("", HttpStatus.BAD_REQUEST));
-//			response = musicStreamingService.findFavoriteTracks();
-//			fail("Método deveria ter caído no fluxo de exceção");
-//		} catch (Exception e) {
-//			fail("Erro na execução do teste");
-//		}
-//	}
 
 	@Test
 	public void findFavoriteArtistsTest() {

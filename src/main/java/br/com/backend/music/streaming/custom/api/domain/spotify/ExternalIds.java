@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar um id externo de uma faixa
+ * Class to represents a external ID of a track
  * 
  * @author diego.vieira
  *
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ExternalIds {
 
 	/**
-	 * Código do ISRC da faixa (International Standard Recording Code)
+	 * ISRC code (International Standard Recording Code)
 	 */
 	@JsonProperty("isrc")
 	private String isrc;

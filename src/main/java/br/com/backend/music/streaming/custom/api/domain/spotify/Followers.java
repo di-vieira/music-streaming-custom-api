@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe contendo dados dos seguidores do usuário ou do artista
+ * Class containig artists followers data
  * 
  * @author diegovieira
  *
@@ -13,13 +13,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Followers {
 
 	/**
-	 * Url dos seguidores
+	 * followers url
 	 */
 	@JsonProperty("href")
 	private String href;
 
 	/**
-	 * Total de seguidores do usuário ou do artista
+	 * Number of followers
 	 */
 	@JsonProperty("total")
 	private Integer total;

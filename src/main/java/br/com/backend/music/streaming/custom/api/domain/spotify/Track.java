@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar uma faixa de um album
+ * Class to represents an album track
  * 
  * @author diego.vieira
  *
@@ -15,38 +15,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Track {
 
 	/**
-	 * Album da faixa
+	 * track album
 	 */
 	@JsonProperty("album")
 	private Album album;
 
 	/**
-	 * Lista de artistas que participam da faixa
+	 * Artists list which participate in that track
 	 */
 	@JsonProperty("artists")
 	private List<Artist> artists;
 
 	/**
-	 * Lista de mercados aonde a faixa está disponível
+	 * List of markets where the track is available
 	 */
 	@JsonProperty("available_markets")
 	private List<String> availableMarkets;
 
 	/**
-	 * Número do disco (Geralmente valor 1. Pode ser diferente em albuns com mais de
-	 * um disco);
+	 * Disk number (Usually 1. Can be different if album have more than one disk);
 	 */
 	@JsonProperty("disc_number")
 	private Integer discNumber;
 
 	/**
-	 * Duração da faixa em milissegundos
+	 * Track duration in miliseconds 
 	 */
 	@JsonProperty("duration_ms")
 	private Integer durationMs;
 
 	/**
-	 * Flag que indica se a faixa possui conteúdo explícito
+	 * Flag that indicates if track has explicit content
 	 */
 	@JsonProperty("explicit")
 	private Boolean explicit;
@@ -58,25 +57,25 @@ public class Track {
 	private ExternalIds externalIds;
 
 	/**
-	 * Lista de urls da faixa
+	 * Track external Urls
 	 */
 	@JsonProperty("external_urls")
 	private ExternalUrls externalUrls;
 
 	/**
-	 * Link da faixa na API Spotify
+	 * Track link in spotify
 	 */
 	@JsonProperty("href")
 	private String href;
 
 	/**
-	 * Id da faixa no Spotify
+	 * Track id in spotify
 	 */
 	@JsonProperty("id")
 	private String id;
 
 	/**
-	 * Indica se a faixa é de um arquivo local
+	 * Indicates if the track is a local file
 	 */
 	@JsonProperty("is_local")
 	private Boolean isLocal;
@@ -88,13 +87,13 @@ public class Track {
 	private Boolean isPlayable;
 
 	/**
-	 * Nome da Faixa
+	 * Track name
 	 */
 	@JsonProperty("name")
 	private String name;
 
 	/**
-	 * Indicador de popularidade da faixa
+	 * Track popularity indicator
 	 */
 	@JsonProperty("popularity")
 	private Integer popularity;
@@ -106,20 +105,19 @@ public class Track {
 	private String previewUrl;
 
 	/**
-	 * Número da faixa no album. Em albuns com mais de um disco, se refere ao número
-	 * daquele disco em específico
+	 * Album track number
 	 */
 	@JsonProperty("track_number")
 	private Integer trackNumber;
 
 	/**
-	 * Tipo da faixa
+	 * Object type
 	 */
 	@JsonProperty("type")
 	private String type;
 
 	/**
-	 * URI da faixa
+	 * Track URI
 	 */
 	@JsonProperty("uri")
 	private String URI;

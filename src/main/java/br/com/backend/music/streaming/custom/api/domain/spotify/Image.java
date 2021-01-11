@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar uma imagem do Spotify
+ * Class to represents a spotify image
  * 
  * @author diego.vieira
  *
@@ -13,19 +13,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Image {
 
 	/**
-	 * Altura da imagem
+	 * Image height
 	 */
 	@JsonProperty("height")
 	private Integer height;
 	
 	/**
-	 * Url da imagem
+	 * Image url
 	 */
 	@JsonProperty("url")
 	private String url;
 	
 	/**
-	 * Largura da imagem
+	 * image width
 	 */
 	@JsonProperty("width")
 	private Integer width;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar uma URL externa do Spotify
+ * Class to represents an spotify external
  * 
  * @author diego.vieira
  *
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL) 
 public class ExternalUrls {
 	/**
-	 * URL externa à API do Spotify
+	 * Spotify external URL
 	 */
 	@JsonProperty("spotify")
 	public String spotify;

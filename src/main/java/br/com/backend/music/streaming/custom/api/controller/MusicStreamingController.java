@@ -22,13 +22,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * Classe controller responsável por orquestrar novas operações utilizando uma
- * API de serviço de streaming de música
+ * Controller class responsible to manage new operations using streaming services APIs
  * 
  * @author diego.vieira
  *
  */
-
 @RequestMapping("/streaming/api")
 @RestController
 public class MusicStreamingController {

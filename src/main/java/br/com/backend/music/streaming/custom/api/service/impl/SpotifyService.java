@@ -59,25 +59,25 @@ public class SpotifyService implements MusicStreamingService {
 	private Logger logger = LoggerFactory.getLogger(SpotifyService.class);
 
 	/**
-	 * URL da API do Spotify
+	 * Spotify API URL
 	 */
 	@Value("${spotify.api.url}")
 	private String spotifyApiUrl;
 
 	/**
-	 * URN para formar o endpoint de consulta de Top Tracks
+	 * URN to make top tracks endpoint
 	 */
 	@Value("${spotify.api.top.tracks}")
 	private String spotifyTopTracks;
 
 	/**
-	 * URN para formar o endpoint de consulta de Top Artists
+	 * UURN to make top artists endpoint
 	 */
 	@Value("${spotify.api.top.artists}")
 	private String spotifyTopArtists;
 
 	/**
-	 * URN para format o endpoint de consulta de Artistas
+	 * URN to make artist search endpoint
 	 */
 	@Value("${spotify.api.artists}")
 	private String spotifyArtists;
@@ -154,6 +154,9 @@ public class SpotifyService implements MusicStreamingService {
 	 */
 	private final String PLAYLIST_DESCRIPTION = "Playlist Criada por API";
 	
+	/**
+	 * Authorization token
+	 */
 	private String token;
 
 	/**
