@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe que representa uma playlist
+ * Class to represents a playlist
  * 
  * @author diegovieira
  *
@@ -15,55 +15,55 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Playlist {
 
 	/**
-	 * 
+	 * Flag that indicates if the playlist is collaborative
 	 */
 	@JsonProperty("collaborative")
 	private Boolean collaborative;
 	
 	/**
-	 * 
+	 * Playlist description
 	 */
 	@JsonProperty("description")
 	private String description;
 	
 	/**
-	 * 
+	 * Playlist external URLs
 	 */
 	@JsonProperty("external_urls")
 	private ExternalUrls externalUrls;
 	
 	/**
-	 * 
+	 * playlist followers
 	 */
 	@JsonProperty("followers")
 	private Followers followers;
 	
 	/**
-	 * 
+	 * Playlist link
 	 */
 	@JsonProperty("href")
 	private String href;
 	
 	/**
-	 * 
+	 * Playlist ID
 	 */
 	@JsonProperty("id")
 	private String id;
 	
 	/**
-	 * 
+	 * List of playlist images
 	 */
 	@JsonProperty("images")
 	private List<Image> images;
 	
 	/**
-	 * 
+	 * Playlist name
 	 */
 	@JsonProperty("name")
 	private String name;
 	
 	/**
-	 * Proprietário da playlist
+	 * Playlist Owner
 	 */
 	@JsonProperty("owner")
 	private User owner;
@@ -75,31 +75,31 @@ public class Playlist {
 	private String primaryColor;
 	
 	/**
-	 * Flag que indica se a playlist é publica ou privada
+	 * Flag that indicates if playlist is public
 	 */
 	@JsonProperty("public")
 	private Boolean isPublic;
 	
 	/**
-	 * Identificador da versão da playlist
+	 * Playlist version identifier
 	 */
 	@JsonProperty("snapshot_id")
 	private String snapshotId;
 	
 	/**
-	 * Lista de faixas que compoem a playlist
+	 * Playlist Track list
 	 */
 	@JsonProperty("tracks")
 	private StreamingResponse<Track> tracks;
 	
 	/**
-	 * tipo de objeto
+	 * Object type
 	 */
 	@JsonProperty("type")
 	private String type;
 	
 	/**
-	 * URI do usuário
+	 * Playlist Uri
 	 */
 	@JsonProperty("uri")
 	private String uri;

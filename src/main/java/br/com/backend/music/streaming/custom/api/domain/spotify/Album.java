@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar um album
+ * Class to represents an album
  * 
  * @author diego.vieira
  *
@@ -15,49 +15,49 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Album {
 
 	/**
-	 * Tipo do album
+	 * Album type
 	 */
 	@JsonProperty("album_type")
 	private String albumType;
 
 	/**
-	 * Lista de artistas do album
+	 * List of album artists
 	 */
 	@JsonProperty("artists")
 	private List<Artist> artists;
 
 	/**
-	 * Lista de mercados aonde o album está disponível
+	 * List of markets where the album is available
 	 */
 	@JsonProperty("available_markets")
 	private List<String> availableMarkets;
 
 	/**
-	 * Lista de URLs do album externas à API
+	 * List of external urls from API
 	 */
 	@JsonProperty("external_urls")
 	private ExternalUrls externalUrls;
 
 	/**
-	 * Link do album
+	 * Album link
 	 */
 	@JsonProperty("href")
 	private String href;
 
 	/**
-	 * Id do album
+	 * Album Id
 	 */
 	@JsonProperty("id")
 	private String id;
 
 	/**
-	 * Lista de imagens do album
+	 * Image list from album
 	 */
 	@JsonProperty("images")
 	private List<Image> images;
 
 	/**
-	 * Nome do album
+	 * Album name
 	 */
 	@JsonProperty("name")
 	private String name;
@@ -69,25 +69,25 @@ public class Album {
 	private String releaseDate;
 
 	/**
-	 * Precisão da data de lançamento
+	 * Precision of release date of album (day, year etc)
 	 */
 	@JsonProperty("release_date_precision")
 	private String releaseDatePrecision;
 
 	/**
-	 * Número total de faixas do album
+	 * Number of tracks for this album
 	 */
 	@JsonProperty("total_tracks")
 	private Integer totalTracks;
 
 	/**
-	 * Tipo do album
+	 * album type
 	 */
 	@JsonProperty("type")
 	private String type;
 
 	/**
-	 * URI do album
+	 * Album URI
 	 */
 	@JsonProperty("uri")
 	private String uri;

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar um artista
+ * Class to represents an artist
  * 
  * @author diego.vieira
  *
@@ -15,61 +15,61 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Artist {
 
 	/**
-	 * Lista de URLs do Artista externas à API
+	 * List of external urls from API
 	 */
 	@JsonProperty("external_urls")
 	private ExternalUrls externalUrls;
 
 	/**
-	 * Lista de seguidores do Artista
+	 * Artist's followers list
 	 */
 	@JsonProperty("followers")
 	private Followers followers;
 
 	/**
-	 * Lista de Generos aos quais o artista pertence
+	 * Artist's genre list
 	 */
 	@JsonProperty("genres")
 	private List<String> genres;
 
 	/**
-	 * URL do artista na API
+	 * Artist url
 	 */
 	@JsonProperty("href")
 	private String href;
 
 	/**
-	 * Id do artista
+	 * Artist Id
 	 */
 	@JsonProperty("id")
 	private String id;
 
 	/**
-	 * Imagens referentes ao artista
+	 * Artist images
 	 */
 	@JsonProperty("images")
 	private List<Image> images;
 
 	/**
-	 * Nome do artista
+	 * Artist name
 	 */
 	@JsonProperty("name")
 	private String name;
 
 	/**
-	 * Popularidade do artista
+	 * Artist's popularity
 	 */
 	@JsonProperty("popularity")
 	private Integer popularity;
 
 	/**
-	 * Tipo do artista
+	 * Artist type
 	 */
 	@JsonProperty("type")
 	private String type;
 
 	/**
-	 * URI do artista
+	 * Artist URI
 	 */
 	@JsonProperty("uri")
 	private String uri;

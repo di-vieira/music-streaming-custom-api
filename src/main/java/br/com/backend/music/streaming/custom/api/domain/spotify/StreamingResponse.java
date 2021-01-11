@@ -3,6 +3,13 @@ package br.com.backend.music.streaming.custom.api.domain.spotify;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Object to represents a response from Top tracks or artists service
+ * 
+ * @author diegovieira
+ *
+ * @param <T>
+ */
 public class StreamingResponse<T> {
 
 	List<T> items = new ArrayList<T>();

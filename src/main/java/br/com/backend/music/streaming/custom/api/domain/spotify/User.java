@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe para representar o usuário autorizado a consumir a API
+ * Class to represents an authorized user to access API
  * 
  * @author diegovieira
  *
@@ -15,52 +15,52 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class User {
 
 	/**
-	 * País do usuário
+	 * User country
 	 */
 	@JsonProperty("country")
 	private String country;
 	/**
-	 * Nome do usuário exibido pelo serviço de streaming
+	 * User name displayed by streaming service
 	 */
 	@JsonProperty("display_name")
 	private String displayName;
 	/**
-	 * URLs externas do usuário
+	 * User external URLs
 	 */
 	@JsonProperty("external_urls")
 	private ExternalUrls externalUrls;
 	/**
-	 * Dados dos seguidores do usuário
+	 * User Followers
 	 */
 	@JsonProperty("followers")
 	private Followers followers;
 	/**
-	 * Url do usuário
+	 * User URL
 	 */
 	@JsonProperty("href")
 	private String href;
 	/**
-	 * id do usuário
+	 * User ID
 	 */
 	@JsonProperty("id")
 	private String id;
 	/**
-	 * Lista de imagens do usuário
+	 * Image list of user
 	 */
 	@JsonProperty("images")
 	private List<Image> images;
 	/**
-	 * Tipo de assinatura do usuário
+	 * User's product type (Free, premium)
 	 */
 	@JsonProperty("product")
 	private String product;
 	/**
-	 * tipo de objeto
+	 * Object Type
 	 */
 	@JsonProperty("type")
 	private String type;
 	/**
-	 * URI do usuário
+	 * User URI
 	 */
 	@JsonProperty("uri")
 	private String uri;
