@@ -81,6 +81,11 @@ Os endpoints dentro de <b>music-streaming-controller</b> necessitam de autentica
 <img src="https://github.com/di-vieira/my-images/blob/master/Authorize3.png"/>
 
 
+<b><i>Feito o login e de volta ao swagger, basta chamar o serviço. O parâmetro authorization não deve ser preenchido pois o mesmo será preenchido com o token de autenticação, através do header da requisição</i><b>
+
+<img src="https://github.com/di-vieira/my-images/blob/master/create_playlist.png"/>
+
+
 
 ## Histórico de Release
 
