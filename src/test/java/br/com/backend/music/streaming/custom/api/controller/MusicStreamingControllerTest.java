@@ -28,17 +28,11 @@ public class MusicStreamingControllerTest {
 	@Mock
 	private MusicStreamingService musicStreamingService;
 
-	/**
-	 * Inicializa os Mocks
-	 */
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
-	/**
-	 * Testa o método do controller que retorna as faixas favoritas do usuário
-	 */
 	@Test
 	public void findFavoriteTracksTest() {
 		try {
@@ -50,9 +44,6 @@ public class MusicStreamingControllerTest {
 		}
 	}
 
-	/**
-	 * Testa o método do controller que retorna as faixas favoritas do usuário
-	 */
 	@Test
 	public void findFavoriteArtistsTest() {
 		try {
@@ -64,10 +55,6 @@ public class MusicStreamingControllerTest {
 		}
 	}
 
-	/**
-	 * Testa o método do controller que cria uma playlist personalizada para o
-	 * usuário
-	 */
 	@Test
 	public void createPersonalPlaylistTest() {
 		try {
@@ -79,9 +66,6 @@ public class MusicStreamingControllerTest {
 		}
 	}
 
-	/**
-	 * Testa o método do controller que retorna as faixas favoritas do usuário
-	 */
 	@Test
 	public void findHowBadIsYourMusicalTasteTest() {
 		try {
@@ -93,9 +77,6 @@ public class MusicStreamingControllerTest {
 		}
 	}
 
-	/**
-	 * Testa o fluxo de exceção do método que retorna as faixas favoritas do usuário
-	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void findFavoriteTracksExceptionTest() {
@@ -106,10 +87,6 @@ public class MusicStreamingControllerTest {
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
 
-	/**
-	 * Testa o fluxo de exceção do método que retorna os artistas favoritos do
-	 * usuário
-	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void findFavoriteArtistsExceptionTest() {
@@ -119,9 +96,6 @@ public class MusicStreamingControllerTest {
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
 
-	/**
-	 * Testa o fluxo de exceção do método que retorna a criação de playlist
-	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void createPersonalPlaylistExceptionTest() {
@@ -131,9 +105,6 @@ public class MusicStreamingControllerTest {
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
 
-	/**
-	 * Testa o fluxo de exceção do método que retorna as faixas favoritas do usuário
-	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void findHowBadIsYourMusicalTasteExceptionTest() {
