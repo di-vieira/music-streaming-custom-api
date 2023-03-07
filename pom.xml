@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.3.RELEASE</version>
+		<version>3.0.4</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.diego</groupId>
@@ -13,9 +13,9 @@
 	<version>1.0.0-SNAPSHOT</version>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<swagger.version>2.9.2</swagger.version>
-		<mockito.version>1.10.19</mockito.version>
+		<mockito.version>4.3.0</mockito.version>
 	</properties>
 
 
@@ -58,7 +58,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
+			<artifactId>mockito-core</artifactId>
 			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -76,11 +76,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.7-SNAPSHOT</version>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.jacoco</groupId>-->
+<!--				<artifactId>jacoco-maven-plugin</artifactId>-->
+<!--				<version>0.8.7-SNAPSHOT</version>-->
+<!--			</plugin>-->
 		</plugins>
 		<finalName>music-streaming-custom-api</finalName>
 	</build>

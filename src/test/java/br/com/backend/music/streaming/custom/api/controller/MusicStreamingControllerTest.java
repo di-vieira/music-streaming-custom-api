@@ -3,7 +3,7 @@ package br.com.backend.music.streaming.custom.api.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -77,39 +77,35 @@ public class MusicStreamingControllerTest {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void findFavoriteTracksExceptionTest() {
 		ResponseEntity<StreamingResponse<Track>> response;
-		when(musicStreamingService.findFavoriteTracks()).thenThrow(Exception.class);
+		when(musicStreamingService.findFavoriteTracks()).thenThrow(RuntimeException.class);
 		response = musicStreamingController.findFavoriteTracks("");
 
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void findFavoriteArtistsExceptionTest() {
 		ResponseEntity<StreamingResponse<Artist>> response;
-		when(musicStreamingService.findFavoriteArtists()).thenThrow(Exception.class);
+		when(musicStreamingService.findFavoriteArtists()).thenThrow(RuntimeException.class);
 		response = musicStreamingController.findFavoriteArtists("");
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void createPersonalPlaylistExceptionTest() {
 		ResponseEntity<Playlist> response;
-		when(musicStreamingService.createPersonalPlaylist(anyString())).thenThrow(Exception.class);
+		when(musicStreamingService.createPersonalPlaylist(anyString())).thenThrow(RuntimeException.class);
 		response = musicStreamingController.createPersonalPlaylist(null, "");
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void findHowBadIsYourMusicalTasteExceptionTest() {
 		ResponseEntity<String> response;
-		when(musicStreamingService.findHowBadIsYourMusicalTaste()).thenThrow(Exception.class);
+		when(musicStreamingService.findHowBadIsYourMusicalTaste()).thenThrow(RuntimeException.class);
 		response = musicStreamingController.findHowBadIsYourMusicalTaste("");
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}

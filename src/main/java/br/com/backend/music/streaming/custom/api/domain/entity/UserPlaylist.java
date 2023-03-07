@@ -2,10 +2,10 @@ package br.com.backend.music.streaming.custom.api.domain.entity;
 
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import io.swagger.annotations.ApiParam;
 
