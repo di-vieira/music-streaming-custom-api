@@ -97,7 +97,6 @@ Obrigado! :)
 ## Info
 
 Diego da Silva Vieira – [@dieguito_vieira](https://twitter.com/dieguito_vieira) – diegodasilvavieira@gmail.com
-Mobile/Whatsapp: 11 98242-4627
 
 [https://github.com/di-vieira/music-streaming-custom-api]
 [https://www.linkedin.com/in/diego-silva-vieira/]
